@@ -316,7 +316,7 @@ void alttab_reset(qk_tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             layer_off(_MNAV);
-            SEND_STRING(SS_UP(KX_MEYE));
+            SEND_STRING(SS_UP(KX_MEYE) SS_TAP(X_BTN1));
             break;
         default:
             break;
