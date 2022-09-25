@@ -235,7 +235,7 @@ enum custom_keycodes {
 // software defined macros.
 #define C_MACRO KC_F19
 
-// eye tracker key: on press it will move the mouse to where I'm looking. on release it will do a mouse button 1 click.
+// eye tracker key: toogles the mouse eye tracking
 #define KX_MEYE X_F14
 
 // tap dances
@@ -316,7 +316,8 @@ void alttab_reset(qk_tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             layer_off(_MNAV);
-            SEND_STRING(SS_UP(KX_MEYE) SS_TAP(X_BTN1));
+            SEND_STRING(SS_UP(KX_MEYE));
+            SEND_STRING(SS_TAP(X_BTN1));
             break;
         default:
             break;
