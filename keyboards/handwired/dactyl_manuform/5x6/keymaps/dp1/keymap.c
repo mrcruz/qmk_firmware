@@ -18,7 +18,7 @@ how to improve?
     single press shortcuts should be one single shot away
     everything 2 key presses away
 
-NOW HOW
+KNOW HOW
     tap dance
         https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_tap_dance.md
         Criteria for "good placement" of a tap dance key:
@@ -65,6 +65,7 @@ REFERENCES
 */
 
 #include QMK_KEYBOARD_H
+
 #define _QWERTY 0
 #define _MODTAP 1
 #define _LANG 2
@@ -199,6 +200,7 @@ enum custom_keycodes {
 // ide specific commands
 #define FINDANY S(C(KC_P)) // fuzzy search of anything
 #define GOTO C(KC_SCLN) // jump to line/column in my IDE setup
+#define I_STOP  S(KC_F5) // stop debug/run
 #define I_BUILD S(C(KC_B)) // build
 #define I_GOSCM A(KC_9) // RIDER: go to scm tab
 #define I_GTEST A(KC_8) // RIDER: go to tests tab
@@ -473,7 +475,7 @@ void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_TAP(X_BTN1));
             break;
         case TD_SINGLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(300) SS_TAP(X_P)); // open link in a new private window
+            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(500) SS_TAP(X_P)); // open link in a new private window
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_TAP(X_BTN2));
@@ -663,6 +665,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TD_ALTAB:
             return 300;
+        case TH_END:
+        case TH_HOME:
         case TD(TDK_THMBR1N):
             return 220;
         case TD_DOT:
@@ -675,6 +679,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+#define process_shifted_numbers(number, macro) if (shifted) keycode = macro; else macroKey = number; del_mods(MOD_BIT(KC_LSFT)); del_oneshot_mods(MOD_BIT(KC_LSFT)); del_weak_mods(MOD_BIT(KC_LSFT))
 #define process_key_tap_and_hold(keyOnTap, keyOnHold) if (pressed) hold ? tap_code16(keyOnHold) : tap_code16(keyOnTap)
 #define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode)
 
@@ -693,58 +698,43 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     // special shifted number macros
     switch (keycode) {
             case M_N1:
-                if (shifted) keycode = C_MACRO5;
-                else macroKey = KC_1;
+                process_shifted_numbers(KC_1, C_MACRO5);
                 break;
             case M_N2:
-                if (shifted) keycode = C_MACRO4;
-                else macroKey = KC_2;
+                process_shifted_numbers(KC_2, C_MACRO4);
                 break;
             case M_N3:
-                if (shifted) keycode = C_MACRO3;
-                else macroKey = KC_3;
+                process_shifted_numbers(KC_3, C_MACRO3);
                 break;
             case M_N4:
-                if (shifted) keycode = C_MACRO2;
-                else macroKey = KC_4;
+                process_shifted_numbers(KC_4, C_MACRO2);
                 break;
             case M_N5:
-                if (shifted) keycode = C_MACRO1;
-                else macroKey = KC_5;
+                process_shifted_numbers(KC_5, C_MACRO1);
                 break;
             case M_N6:
-                if (shifted) keycode = C_MACRO1;
-                else macroKey = KC_6;
+                process_shifted_numbers(KC_6, C_MACRO1);
                 break;
             case M_N7:
-                if (shifted) keycode = C_MACRO2;
-                else macroKey = KC_7;
+                process_shifted_numbers(KC_7, C_MACRO2);
                 break;
             case M_N8:
-            if (shifted) keycode = C_MACRO3;
-                else macroKey = KC_8;
+                process_shifted_numbers(KC_8, C_MACRO3);
                 break;
             case M_N9:
-            if (shifted) keycode = C_MACRO4;
-                else macroKey = KC_9;
+                process_shifted_numbers(KC_9, C_MACRO4);
                 break;
             case M_N0:
-            if (shifted) keycode = C_MACRO5;
-                else macroKey = KC_0;
+                process_shifted_numbers(KC_0, C_MACRO5);
                 break;
     }
 
     if (macroKey != 0)
     {
-        del_mods(MOD_BIT(KC_LSFT));
-        del_oneshot_mods(MOD_BIT(KC_LSFT));
-        del_weak_mods(MOD_BIT(KC_LSFT));
-
         if (pressed){
-            register_code(macroKey);
-        }else{
-            unregister_code(macroKey);
+            tap_code16(macroKey);
         }
+    }
 
     // tap-hold key macros
     switch (keycode) {
@@ -992,10 +982,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 layer_off(_NUMBER);
                 return false;
             case M_TSTRUN:
-                SEND_STRING(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_R)));
+                SEND_STRING(SS_LSFT(SS_TAP(X_F5)) SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_R)));
                 return false;
             case M_TSTDEB:
-                SEND_STRING(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_D)));
+                SEND_STRING(SS_LSFT(SS_TAP(X_F5)) SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_D)));
                 return false;
         }
     }
@@ -1022,7 +1012,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                      C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,SELCT   ,FINDANY ,WIN_PGUP,TD_BACK ,FORWARD ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
+        _______,SELCT   ,FINDANY ,WIN_PGUP,TD_BACK ,XXXXXXX ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,                      KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                                          _______ ,_______ ,
@@ -1034,7 +1024,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FUNC] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,                      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,CLOSEAPP,BROWSE  ,BROWSEP ,XXXXXXX ,PRINTSCR,                      KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
-        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,WINTAP  ,                      WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
+        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,XXXXXXX ,                      WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
         _______,SAVENOTE,DT_MOVE ,DT_CPYTO,DT_CPYFR,XXXXXXX ,                      KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
                          _______ ,_______ ,                                                          _______ ,_______ ,
                                             _______,_______,                       _______,_______,
@@ -1112,7 +1102,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       W_SLEFT ,_______ ,UP10    ,_______ ,_______ ,_______ ,
           _______, OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,                       W_LEFT  ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
-          _______ ,_______ ,_______ ,M_TSTDEB,M_TSTRUN,I_BUILD ,                       _______ ,I_HIDTA ,I_GOSCM ,I_GTEST ,_______ ,_______ ,
+          _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                       _______ ,I_HIDTA ,I_GOSCM ,I_GTEST ,_______ ,_______ ,
                                   _______ ,_______ ,                                               _______ ,_______ ,
                                                   _______ ,_______ ,            _______ ,_______ ,
                                                   _______ ,_______ ,            _______ ,_______ ,
