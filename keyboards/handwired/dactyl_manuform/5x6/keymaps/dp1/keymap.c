@@ -82,7 +82,6 @@ REFERENCES
 
 enum custom_keycodes {
     QWERTY = SAFE_RANGE,
-    SYMB,
     ALT_TAB,
     ALT_TABB,
     SLOWTAB,
@@ -147,6 +146,7 @@ enum custom_keycodes {
     M_N0,
     M_TSTRUN, // run tests
     M_TSTDEB, // debug tests
+    M_SELWORD, // select word
 };
 
 // #define L_SYMNAV MO(_SYMNAV)
@@ -254,7 +254,8 @@ enum custom_keycodes {
 #define TH_PIPE LT(_HIGHQWERTY, KC_PIPE)
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
-#define TH_END  LT(_HIGHQWERTY, KC_END )
+#define TH_END  LT(_HIGHQWERTY, KC_END)
+#define TH_COPY LT(_HIGHQWERTY, KC_C)
 
 // toggles
 #define SET_NAV TG(_NAV)
@@ -279,6 +280,7 @@ enum custom_keycodes {
 #define TD_SLSH TD(TDK_SLSH)
 #define TD_BACK TD(TDK_BACK)
 #define TD_UNDO TD(TDK_UNDO)
+#define TD_THUMBR TD(TDK_THMBR1N)
 
 // macros
 #define SS_ALTTAB SS_DOWN(X_LALT) SS_DELAY(10) SS_TAP(X_TAB) SS_DELAY(10) SS_UP(X_LALT)
@@ -417,27 +419,26 @@ void td_altfun_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 static td_state_t td_state_oneshot;
+uint8_t mod_state;
 void td_oneshot_finished(qk_tap_dance_state_t *state, void *user_data) {
-    uint8_t mod_state;
     td_state_oneshot = cur_dance(state);
+    mod_state = get_mods();
+    if (mod_state == 0) {
+        mod_state = MOD_BIT(KC_LCTL);
+    }
+
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
-            mod_state = get_mods();
-            if (mod_state == 0) {
-                mod_state = MOD_BIT(KC_LCTL);
-            }
-
             set_oneshot_layer(_HIGHQWERTY, ONESHOT_START);
             add_oneshot_mods(mod_state);
             break;
         case TD_SINGLE_HOLD:
-            layer_on(_RAISE);
+            layer_on(_HIGHQWERTY);
+            add_mods(mod_state);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_LCTL(SS_TAP(X_F)));
             break;
-        case TD_DOUBLE_HOLD:
-        case TD_TRIPLE_TAP:
         default:
             break;
     }
@@ -447,7 +448,6 @@ void td_oneshot_reset(qk_tap_dance_state_t *state, void *user_data) {
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
             clear_oneshot_layer_state(ONESHOT_PRESSED);
-
             // clear_mods();
             // clear_oneshot_mods();
             // clear_keyboard_but_mods();
@@ -457,11 +457,9 @@ void td_oneshot_reset(qk_tap_dance_state_t *state, void *user_data) {
             // reset_tap_dance(state);
             break;
         case TD_SINGLE_HOLD:
-            layer_off(_RAISE);
+            layer_off(_HIGHQWERTY);
+            del_mods(mod_state);
             break;
-        case TD_DOUBLE_TAP:
-        case TD_DOUBLE_HOLD:
-        case TD_TRIPLE_TAP:
         default:
             break;
     }
@@ -664,10 +662,10 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TD_ALTAB:
-            return 300;
         case TH_END:
         case TH_HOME:
-        case TD(TDK_THMBR1N):
+            return 300;
+        case TD_THUMBR:
             return 220;
         case TD_DOT:
         case TD_COMM:
@@ -767,6 +765,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             return false;
         case TH_END:
             if (pressed) hold ? tap_code16(C(KC_END)) : tap_code16(KC_END);
+            return false;
+        case TH_COPY:
+            if (hold){
+                if (pressed){
+                    add_mods(MOD_BIT(KC_LSFT) & MOD_BIT(KC_LCTL));
+                }else{
+                    del_mods(MOD_BIT(KC_LSFT) & MOD_BIT(KC_LCTL));
+                }
+            }else{
+                if (pressed) tap_code16(C(KC_C));
+            }
+
             return false;
     }
 
@@ -899,8 +909,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case SAVENOTE:
                 SEND_STRING(SS_COPY SS_DELAY(10));
-                SEND_STRING(SS_GOAPP(X_2) SS_DELAY(30));
-                SEND_STRING(SS_LALT(SS_TAP(X_1) SS_DELAY(10)));
+                SEND_STRING(SS_GOAPP(X_2) SS_DELAY(100));
+                SEND_STRING(SS_LALT(SS_TAP(X_1) SS_DELAY(50)));
                 SEND_STRING(SS_LCTL(SS_TAP(X_HOME) SS_DELAY(5) SS_TAP(X_V) SS_DELAY(10)));
                 SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(10));
                 SEND_STRING(SS_ALTTAB);
@@ -922,6 +932,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case M_MSEL:
                 SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C)));
+                return false;
+            case M_SELWORD:
+                SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT) SS_LSFT(SS_TAP(X_LEFT))));
                 return false;
             case M_CIRC:
                 SEND_STRING("^ "); // ^
@@ -1006,7 +1019,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,TD_COMM, TD_DOT , TD_SLSH,SETMAIN,
                           KC_WH_U,KC_WH_D,                                                      KC_WH_D, KC_WH_U,
                               LT(_NAV, KC_BSPC),OSM_SHFT,                        LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
-                                        KC_BTN2,TD_ALTAB,                        TD_ALTAB, KC_BTN2,
+                                        SH_OS  ,TD_ALTAB,                        TD_ALTAB, SH_OS,
                                         KC_BTN3,KC_BTN1 ,                        KC_BTN1 , KC_BTN3
     ),
 
@@ -1016,7 +1029,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,                      KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                                          _______ ,_______ ,
-                                LT(_RAISE, KC_BSPC),_______,                       LT(_RAISE, KC_ENTER), TD(TDK_THMBR1N),
+                                LT(_RAISE, KC_BSPC),_______,                       LT(_RAISE, KC_ENTER), TD_THUMBR,
                                             _______,_______,                       _______,_______,
                                             _______,_______,                       _______,_______
     ),
@@ -1055,10 +1068,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_NUMBER] = LAYOUT_5x6(
-        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                      _______ ,_______ ,_______ ,_______ ,_______  ,_______,
-        _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                     DELWORD ,KC_7    ,KC_8    ,KC_9     ,XXXXXXX ,_______ ,
-    _______,TA(KC_EXLM),TS(KC_MINS),TC(KC_PLUS),KC_EQL,KC_UNDS,                    KC_BSPC ,KC_4    ,KC_5    ,KC_6     ,KC_COMM ,_______ ,
-        _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,                     KC_0    ,KC_1    ,KC_2    ,KC_3     ,KC_DOT  ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                     DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
+    _______,TA(KC_EXLM),TS(KC_MINS),TC(KC_PLUS),KC_EQL,KC_UNDS,                    KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
+        _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,                     KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
                                    _______ ,_______ ,                                                _______ ,_______ ,
                                             _______ ,_______ ,                     _______ ,_______ ,
                                             _______ ,_______ ,                     _______ ,_______ ,
@@ -1080,7 +1093,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
         _______,L_ATIL ,L_ACIR ,L_EACU ,_______,L_QUOT ,                       _______,L_UACU ,L_IACU ,L_OACU ,L_OCIR ,_______,
         _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,                       _______,_______,_______,L_OTIL ,C_MACRO,_______,
-        _______,L_AGRA ,_______,L_CEDI ,L_QUOV ,_______,                       _______,L_QUOM  ,_______,_______,_______,_______,
+        _______,L_AGRA ,_______,L_CEDI ,L_QUOV ,_______,                       _______,L_QUOM ,_______,_______,_______,_______,
                                   _______,_______,                                               _______,_______,
                                                   _______,_______,            _______,_______,
                                                   _______,_______,            _______,_______,
@@ -1143,14 +1156,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
-// keep working on this
-// const keypos_t PROGMEM hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
-//   {{5, 0}, {4, 0}, {3, 0}, {2, 0}, {1, 0}, {0, 0}},
-//   {{5, 1}, {4, 1}, {3, 1}, {2, 1}, {1, 1}, {0, 1}},
-//   {{5, 2}, {4, 2}, {3, 2}, {2, 2}, {1, 2}, {0, 2}},
-//   {{5, 3}, {4, 3}, {3, 3}, {2, 3}, {1, 3}, {0, 3}},
-//   {{5, 3}, {4, 3}, {3, 3}, {2, 3}, {1, 3}, {0, 3}},
-// };
+const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
+    {{5, 6}, {4, 6}, {3, 6}, {2, 6}, {1, 6}, {0, 6}},
+    {{5, 7}, {4, 7}, {3, 7}, {2, 7}, {1, 7}, {0, 7}},
+    {{5, 8}, {4, 8}, {3, 8}, {2, 8}, {1, 8}, {0, 8}},
+    {{5, 9}, {4, 9}, {3, 9}, {2, 9}, {1, 9}, {0, 9}},
+    {{5,10}, {4,10}, {3,10}, {2,10}, {1,10}, {0,10}},
+    {{5,11}, {4,11}, {3,11}, {2,11}, {1,11}, {0,11}},
+
+    {{5, 0}, {4, 0}, {3, 0}, {2, 0}, {1, 0}, {0, 0}},
+    {{5, 1}, {4, 1}, {3, 1}, {2, 1}, {1, 1}, {0, 1}},
+    {{5, 2}, {4, 2}, {3, 2}, {2, 2}, {1, 2}, {0, 2}},
+    {{5, 3}, {4, 3}, {3, 3}, {2, 3}, {1, 3}, {0, 3}},
+    {{5, 4}, {4, 4}, {3, 4}, {2, 4}, {1, 4}, {0, 4}},
+    {{5, 5}, {4, 5}, {3, 5}, {2, 5}, {1, 5}, {0, 5}}
+};
 
 
 // ============ combos
