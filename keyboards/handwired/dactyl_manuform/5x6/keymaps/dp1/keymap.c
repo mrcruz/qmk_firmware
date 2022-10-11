@@ -255,7 +255,7 @@ enum custom_keycodes {
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_END  LT(_HIGHQWERTY, KC_END)
-#define TH_COPY LT(_HIGHQWERTY, KC_C)
+#define TH_SELCT LT(_HIGHQWERTY, KC_S)
 
 // toggles
 #define SET_NAV TG(_NAV)
@@ -275,6 +275,7 @@ enum custom_keycodes {
 #define TD_ALFU TD(TDK_ALTFUN)
 #define TD_1SHOT TD(TDK_1SHOT)
 #define TD_CLICK TD(TDK_CLICK)
+#define TD_CLIC2 TD(TDK_CLIC2)
 #define TD_COMM TD(TDK_COMM)
 #define TD_DOT TD(TDK_DOT)
 #define TD_SLSH TD(TDK_SLSH)
@@ -476,34 +477,26 @@ void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(500) SS_TAP(X_P)); // open link in a new private window
             break;
         case TD_DOUBLE_TAP:
-            SEND_STRING(SS_TAP(X_BTN2));
-            set_oneshot_layer(_HIGHQWERTY, ONESHOT_START);
+            SEND_STRING(SS_DOWN(X_BTN1)); // hold mouse button 1 until it is pressed again
             break;
         case TD_DOUBLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C))); // select hovered text and copy it
-            break;
-        case TD_TRIPLE_TAP:
-            SEND_STRING(SS_DOWN(X_BTN1)); // hold mouse button 1 until it is pressed again
             break;
         default:
             break;
     }
 }
 
-void td_click_reset(qk_tap_dance_state_t *state, void *user_data) {
-    switch (td_state_click) {
-        case TD_SINGLE_TAP:
-            break;
+
+static td_state_t td_state_clic2;
+void td_clic2_finished(qk_tap_dance_state_t *state, void *user_data) {
+    td_state_clic2 = cur_dance(state);
+    switch (td_state_clic2) {
         case TD_SINGLE_HOLD:
+            SEND_STRING(SS_TAP(X_BTN2));
             break;
-        case TD_DOUBLE_TAP:
-            clear_oneshot_layer_state(ONESHOT_PRESSED);
-            break;
-        case TD_DOUBLE_HOLD:
-            break;
-        case TD_TRIPLE_TAP:
-            break;
+        case TD_SINGLE_TAP:
         default:
+            SEND_STRING(SS_TAP(X_BTN3));
             break;
     }
 }
@@ -635,6 +628,7 @@ enum tap_dance{
     TDK_ALTFUN,
     TDK_1SHOT,
     TDK_CLICK,
+    TDK_CLIC2,
     TDK_COMM,
     TDK_DOT,
     TDK_SLSH,
@@ -645,7 +639,8 @@ enum tap_dance{
 
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [TDK_CLICK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_click_finished, td_click_reset),
+    [TDK_CLICK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_click_finished, NULL),
+    [TDK_CLIC2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_clic2_finished, NULL),
     [TDK_1SHOT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oneshot_finished, td_oneshot_reset),
     [TDK_AT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_alttab_finished, alttab_reset),
     [TDK_ATB] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_atb_finished, td_atb_reset),
@@ -766,17 +761,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_END:
             if (pressed) hold ? tap_code16(C(KC_END)) : tap_code16(KC_END);
             return false;
-        case TH_COPY:
+        case TH_SELCT:
             if (hold){
-                if (pressed){
-                    add_mods(MOD_BIT(KC_LSFT) & MOD_BIT(KC_LCTL));
-                }else{
-                    del_mods(MOD_BIT(KC_LSFT) & MOD_BIT(KC_LCTL));
-                }
+                if (pressed) SEND_STRING(SS_DOWN(X_BTN1));
+                else SEND_STRING(SS_UP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C)));
             }else{
-                if (pressed) tap_code16(C(KC_C));
+                if (pressed) SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C))); // select hovered text and copy it
             }
-
             return false;
     }
 
@@ -1013,7 +1004,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //     6  , 3  , 2  , 1  , 1  , 2  ,
 
     [_QWERTY] = LAYOUT_5x6(
-     ADJ(KC_ESC), M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,                        M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,SETMAIN,
+     ADJ(KC_ESC), M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,                        M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
         KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                        KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,SET_NAV,
         OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                        KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,TD_COMM, TD_DOT , TD_SLSH,SETMAIN,
@@ -1057,10 +1048,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_MNAV] = LAYOUT_5x6(
-        _______,_______ ,_______ ,_______ ,_______ ,_______,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,CLOSEAPP,KC_BTN2 ,KC_MS_U ,TD_CLICK,M_MSEL ,                       M_MSEL  ,TD_CLICK,KC_MS_U ,KC_BTN2 ,CLOSEAPP,_______,
-        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_BTN3,                       KC_BTN3 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
-        _______,GO_APP5 ,GO_APP4 ,GO_APP3 ,GO_APP2 ,GO_APP1,                       GO_APP1 ,GO_APP2 ,GO_APP3 ,GO_APP4 ,GO_APP5 ,_______,
+        _______,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
+        _______,CLOSEAPP,TD_CLIC2,KC_MS_U ,TD_CLICK,TH_SELCT,                       TH_SELCT,TD_CLICK,KC_MS_U ,TD_CLIC2,CLOSEAPP,_______,
+        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_BNT3 ,                       KC_BNT3 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
+        _______,GO_APP5 ,GO_APP4 ,GO_APP3 ,GO_APP2 ,GO_APP1 ,                       GO_APP1 ,GO_APP2 ,GO_APP3 ,GO_APP4 ,GO_APP5 ,_______,
                                 _______ ,_______ ,                                                   _______ ,_______ ,
                                             _______,_______,                       _______,_______,
                                             _______,_______,                       _______,_______,
