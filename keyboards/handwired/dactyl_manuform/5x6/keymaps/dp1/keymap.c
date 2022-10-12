@@ -1050,7 +1050,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MNAV] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
         _______,CLOSEAPP,TD_CLIC2,KC_MS_U ,TD_CLICK,TH_SELCT,                       TH_SELCT,TD_CLICK,KC_MS_U ,TD_CLIC2,CLOSEAPP,_______,
-        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_BNT3 ,                       KC_BNT3 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
+        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_BTN3 ,                       KC_BTN3 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
         _______,GO_APP5 ,GO_APP4 ,GO_APP3 ,GO_APP2 ,GO_APP1 ,                       GO_APP1 ,GO_APP2 ,GO_APP3 ,GO_APP4 ,GO_APP5 ,_______,
                                 _______ ,_______ ,                                                   _______ ,_______ ,
                                             _______,_______,                       _______,_______,
