@@ -250,6 +250,7 @@ enum custom_keycodes {
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_END  LT(_HIGHQWERTY, KC_END)
 #define TH_SELCT LT(_HIGHQWERTY, KC_S)
+#define TH_CLIC2 LT(_HIGHQWERTY, KC_BTN2)
 
 // toggles
 #define SET_NAV TG(_NAV)
@@ -269,7 +270,6 @@ enum custom_keycodes {
 #define TD_ALFU TD(TDK_ALTFUN)
 #define TD_1SHOT TD(TDK_1SHOT)
 #define TD_CLICK TD(TDK_CLICK)
-#define TD_CLIC2 TD(TDK_CLIC2)
 #define TD_COMM TD(TDK_COMM)
 #define TD_DOT TD(TDK_DOT)
 #define TD_SLSH TD(TDK_SLSH)
@@ -482,21 +482,6 @@ void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-
-static td_state_t td_state_clic2;
-void td_clic2_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state_clic2 = cur_dance(state);
-    switch (td_state_clic2) {
-        case TD_SINGLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN2));
-            break;
-        case TD_SINGLE_TAP:
-        default:
-            SEND_STRING(SS_TAP(X_BTN3));
-            break;
-    }
-}
-
 void td_slash_finished(qk_tap_dance_state_t *state, void *user_data) {
     td_state = cur_dance(state);
     switch (td_state) {
@@ -624,7 +609,6 @@ enum tap_dance{
     TDK_ALTFUN,
     TDK_1SHOT,
     TDK_CLICK,
-    TDK_CLIC2,
     TDK_COMM,
     TDK_DOT,
     TDK_SLSH,
@@ -636,7 +620,6 @@ enum tap_dance{
 // Tap Dance definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
     [TDK_CLICK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_click_finished, NULL),
-    [TDK_CLIC2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_clic2_finished, NULL),
     [TDK_1SHOT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oneshot_finished, td_oneshot_reset),
     [TDK_AT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_alttab_finished, alttab_reset),
     [TDK_ATB] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_atb_finished, td_atb_reset),
@@ -687,7 +670,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     switch (keycode)
     {
         case TD_CLICK:
-        case TD_CLIC2:
+        case TH_CLIC2:
         case TH_SELCT:
         case KC_BTN1:
         case KC_BTN2:
@@ -783,6 +766,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 else SEND_STRING(SS_UP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C)));
             }else{
                 if (pressed) SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C))); // select hovered text and copy it
+            }
+            return false;
+        case TH_CLIC2:
+            if (hold){
+                if (pressed) SEND_STRING(SS_TAP(X_BTN2));
+            }else{
+                SEND_STRING(SS_TAP(X_BTN3));
             }
             return false;
     }
@@ -1065,7 +1055,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_MNAV] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,CLOSEAPP,TD_CLIC2,KC_MS_U ,TD_CLICK,TH_SELCT,                       TH_SELCT,TD_CLICK,KC_MS_U ,TD_CLIC2,CLOSEAPP,_______,
+        _______,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_SELCT,                       TH_SELCT,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______,
         KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_BTN3 ,                       KC_BTN3 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
         _______,GO_APP5 ,GO_APP4 ,GO_APP3 ,GO_APP2 ,GO_APP1 ,                       GO_APP1 ,GO_APP2 ,GO_APP3 ,GO_APP4 ,GO_APP5 ,_______,
                                 _______ ,_______ ,                                                   _______ ,_______ ,
