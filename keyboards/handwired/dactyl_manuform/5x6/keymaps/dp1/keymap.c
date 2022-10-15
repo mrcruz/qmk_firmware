@@ -2,19 +2,16 @@
 
 TODO:
     add combo to osm ctrl+alt?
-    maybe i need a layer with all the one shot modifiers for keys that need to be pressed once
     KC_REPEAT
     KC_STOP
-    KC_PPLS
     KC_LEAD https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_leader_key.md
     KC_LOCK https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_key_lock.md
 
 how to improve?
     taps are less stressful than holds
     move things to one shot mods
-    repeat last action button
     what am I using more?
-    single press shortcuts should be one single shot away
+    single press actions should be one single shot away
     everything 2 key presses away
 
 KNOW HOW
