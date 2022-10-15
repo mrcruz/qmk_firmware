@@ -29,15 +29,6 @@ MANUAL
         https://github.com/qmk/qmk_firmware/blob/master/quantum/action_util.h
 
 REFERENCES
-    https://getreuer.info/posts/keyboards/triggers/index.html
-    https://getreuer.info/posts/keyboards/macros/index.html
-    https://www.reddit.com/r/olkb/comments/y07cb8/new_multimode_use_for_caps_word/
-    https://github.com/manna-harbour/miryoku
-    https://stevep99.github.io/seniply/k
-    https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum
-    https://github.com/qmk/qmk_firmware/blob/master/docs/feature_dynamic_macros.md
-    https://imgur.com/gallery/l1xNsoO
-    https://github.com/Yowkees/keyball
     https://colemakmods.github.io/ergonomic-mods/wide.html
     https://configure.zsa.io/ergodox-ez/layouts/GWjD3/latest/1
     https://configure.zsa.io/planck-ez/layouts/Wblvj/latest/0
@@ -45,16 +36,24 @@ REFERENCES
     https://dreymar.colemak.org/layers-extend.html
     https://forum.colemak.com/topic/2014-extend-extra-extreme/
     https://geekhack.org/index.php?topic=51069.0
+    https://getreuer.info/posts/keyboards/macros/index.html
+    https://getreuer.info/posts/keyboards/triggers/index.html
     https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum
     https://github.com/getreuer/qmk-keymap/blob/main/README.md
     https://github.com/klavgen/klavgen
+    https://github.com/manna-harbour/miryoku
     https://github.com/precondition/dactyl-manuform-keymap
+    https://github.com/qmk/qmk_firmware/blob/master/docs/feature_dynamic_macros.md
     https://github.com/qmk/qmk_firmware/blob/master/keyboards/planck/keymaps/jeebak/keymap.c
     https://github.com/rafaelromao/keyboards
+    https://github.com/Yowkees/keyball
+    https://imgur.com/gallery/l1xNsoO
     https://keymapdb.com/
     https://precondition.github.io/home-row-mods
+    https://stevep99.github.io/seniply/k
     https://www.keybr.com/
     https://www.reddit.com/r/olkb/comments/tnbvu3/planned_34_key_layout_to_reduce_rsi_pain_from/
+    https://www.reddit.com/r/olkb/comments/y07cb8/new_multimode_use_for_caps_word/
     nice simpler one shot layer with thumb shift and ctrl https://www.youtube.com/watch?v=8wZ8FRwOzhU
 
 */
