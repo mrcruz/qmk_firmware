@@ -153,7 +153,9 @@ enum custom_keycodes {
 
 #define CT_PGDN TC(KC_PGDN)
 #define SFT_NEXT TS(KC_F3)
+#define SFT_PGUP TS(KC_PGUP)
 #define WIN_PGUP LT(_WIN, KC_PGUP)
+#define WIN_NEXT LT(_WIN, KC_F3)
 
 // oneshots
 #define OS_FUNC OSL(_FUNC)
@@ -250,7 +252,7 @@ enum custom_keycodes {
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_END  LT(_HIGHQWERTY, KC_END)
 #define TH_SELCT LT(_HIGHQWERTY, KC_S)
-#define TH_CLIC2 LT(_HIGHQWERTY, KC_BTN2)
+#define TH_CLIC2 LT(_HIGHQWERTY, KC_Q)
 
 // toggles
 #define SET_NAV TG(_NAV)
@@ -672,6 +674,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TD_CLICK:
         case TH_CLIC2:
         case TH_SELCT:
+        case CLOSEAPP:
+        case CLOSETAB:
         case KC_BTN1:
         case KC_BTN2:
         case KC_BTN3:
@@ -770,9 +774,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             return false;
         case TH_CLIC2:
             if (hold){
-                if (pressed) SEND_STRING(SS_TAP(X_BTN2));
+                if (pressed) tap_code(KC_BTN2);
             }else{
-                SEND_STRING(SS_TAP(X_BTN3));
+                if (pressed) tap_code(KC_BTN3);
             }
             return false;
     }
@@ -1022,8 +1026,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                      C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,SELCT   ,FINDANY ,WIN_PGUP,TD_BACK ,XXXXXXX ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
-        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
+        _______,SELCT   ,FINDANY ,WIN_NEXT,TD_BACK ,XXXXXXX ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
+        KC_ESC ,TD_ALFU ,SFT_PGUP,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,                      KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                                          _______ ,_______ ,
                                 LT(_RAISE, KC_BSPC),_______,                       LT(_RAISE, KC_ENTER), TD_THUMBR,
