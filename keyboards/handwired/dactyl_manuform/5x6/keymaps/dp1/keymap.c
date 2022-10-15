@@ -2,7 +2,6 @@
 
 TODO:
     add combo to osm ctrl+alt?
-    use swap hands
     maybe i need a layer with all the one shot modifiers for keys that need to be pressed once
     KC_REPEAT
     KC_STOP
@@ -35,14 +34,13 @@ MANUAL
 REFERENCES
     https://getreuer.info/posts/keyboards/triggers/index.html
     https://getreuer.info/posts/keyboards/macros/index.html
+    https://www.reddit.com/r/olkb/comments/y07cb8/new_multimode_use_for_caps_word/
     https://github.com/manna-harbour/miryoku
     https://stevep99.github.io/seniply/k
     https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum
     https://github.com/qmk/qmk_firmware/blob/master/docs/feature_dynamic_macros.md
     https://imgur.com/gallery/l1xNsoO
     https://github.com/Yowkees/keyball
-    http://thedarnedestthing.com/planck%20one%20shot
-    http://thedarnedestthing.com/planck%20qmk
     https://colemakmods.github.io/ergonomic-mods/wide.html
     https://configure.zsa.io/ergodox-ez/layouts/GWjD3/latest/1
     https://configure.zsa.io/planck-ez/layouts/Wblvj/latest/0
@@ -322,6 +320,7 @@ static td_state_t td_state;
 td_state_t cur_dance(qk_tap_dance_state_t *state);
 
 static td_state_t td_state_alttab;
+static bool at_press_mouse;
 void td_alttab_finished(qk_tap_dance_state_t *state, void *user_data) {
     td_state_alttab = cur_dance(state);
     switch (td_state_alttab) {
@@ -331,6 +330,7 @@ void td_alttab_finished(qk_tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_HOLD:
             layer_on(_MNAV);
             SEND_STRING(SS_DOWN(KX_MEYE));
+            at_press_mouse = true;
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(10) SS_TAP(X_TAB) SS_DELAY(50) SS_TAP(X_TAB) SS_DELAY(10) SS_UP(X_LALT));
@@ -355,7 +355,7 @@ void alttab_reset(qk_tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_HOLD:
             layer_off(_MNAV);
             SEND_STRING(SS_UP(KX_MEYE));
-            if(shifted == false) SEND_STRING(SS_TAP(X_BTN1));
+            if(shifted == false && at_press_mouse) SEND_STRING(SS_TAP(X_BTN1));
             break;
         default:
             break;
@@ -686,6 +686,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     // getting information to differentiate between presses and holds
     bool pressed = record->event.pressed;
     bool hold = record->tap.count == 0;
+
+    // after some key presses, we want to cancel the click on release of TDK_AT
+    switch (keycode)
+    {
+        case TD_CLICK:
+        case TD_CLIC2:
+        case TH_SELCT:
+        case KC_BTN1:
+        case KC_BTN2:
+        case KC_BTN3:
+        case GO_APP1:
+        case GO_APP2:
+        case GO_APP3:
+        case GO_APP4:
+        case GO_APP5:
+            at_press_mouse = false;
+            break;
+        default:
+            break;
+    }
 
     uint16_t macroKey = 0;
     // special shifted number macros
