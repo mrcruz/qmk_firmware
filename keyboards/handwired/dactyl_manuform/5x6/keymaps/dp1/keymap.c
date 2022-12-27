@@ -686,6 +686,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case GO_APP3:
         case GO_APP4:
         case GO_APP5:
+        case TABNEXT:
+        case TABPREV:
+        case TD_ATB:
             at_press_mouse = false;
             break;
         default:
