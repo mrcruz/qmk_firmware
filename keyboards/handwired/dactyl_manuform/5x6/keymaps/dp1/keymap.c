@@ -331,7 +331,7 @@ void td_alttab_finished(qk_tap_dance_state_t *state, void *user_data) {
             at_press_mouse = true;
             break;
         case TD_DOUBLE_TAP:
-            SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(10) SS_TAP(X_TAB) SS_DELAY(50) SS_TAP(X_TAB) SS_DELAY(10) SS_UP(X_LALT));
+            SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(80) SS_TAP(X_TAB) SS_DELAY(20) SS_UP(X_LALT));
             break;
         case TD_DOUBLE_HOLD:
             SEND_STRING(SS_DOWN(X_LALT) SS_DOWN(X_LCTL) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(30) SS_TAP(X_TAB) SS_DELAY(30) SS_UP(X_LALT) SS_UP(X_LCTL));
@@ -478,6 +478,7 @@ void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_DOWN(X_BTN1)); // hold mouse button 1 until it is pressed again
             break;
         case TD_DOUBLE_HOLD:
+            SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(50) SS_TAP(X_BTN1)); // open link in a new private window
             break;
         default:
             break;
@@ -638,6 +639,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TD_ALTAB:
+            return 320;
         case TH_END:
         case TH_HOME:
             return 300;
@@ -1021,13 +1023,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                           KC_WH_U,KC_WH_D,                                                      KC_WH_D, KC_WH_U,
                               LT(_NAV, KC_BSPC),OSM_SHFT,                        LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
                                         SH_OS  ,TD_ALTAB,                        TD_ALTAB, SH_OS,
-                                        KC_BTN3,KC_BTN1 ,                        KC_BTN1 , KC_BTN3
+                                        KC_LOCK,KC_BTN1 ,                        KC_BTN1 , KC_LOCK
     ),
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                      C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,SELCT   ,FINDANY ,WIN_NEXT,TD_BACK ,XXXXXXX ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
-        KC_ESC ,TD_ALFU ,SFT_PGUP,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
+        _______,SELCT   ,FINDANY ,WIN_PGUP,TD_BACK ,XXXXXXX ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
+        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,                      KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                                          _______ ,_______ ,
                                 LT(_RAISE, KC_BSPC),_______,                       LT(_RAISE, KC_ENTER), TD_THUMBR,
@@ -1060,8 +1062,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MNAV] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
         _______,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_SELCT,                       TH_SELCT,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______,
-        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_BTN3 ,                       KC_BTN3 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
-        _______,GO_APP5 ,GO_APP4 ,GO_APP3 ,GO_APP2 ,GO_APP1 ,                       GO_APP1 ,GO_APP2 ,GO_APP3 ,GO_APP4 ,GO_APP5 ,_______,
+        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                       GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
+        _______,GO_APP3 ,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,                       GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,GO_APP3 ,_______,
                                 _______ ,_______ ,                                                   _______ ,_______ ,
                                             _______,_______,                       _______,_______,
                                             _______,_______,                       _______,_______,
@@ -1071,7 +1073,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_NUMBER] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                     DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
-    _______,TA(KC_EXLM),TS(KC_MINS),TC(KC_PLUS),KC_EQL,KC_UNDS,                    KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
+        _______ ,KC_EXLM ,KC_MINS ,KC_PLUS ,KC_EQL  ,KC_UNDS ,                     KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
         _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,                     KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
                                    _______ ,_______ ,                                                _______ ,_______ ,
                                             _______ ,_______ ,                     _______ ,_______ ,
@@ -1092,8 +1094,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_LANG] = LAYOUT_5x6(
         _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
-        _______,L_ATIL ,L_ACIR ,L_EACU ,_______,L_QUOT ,                       _______,L_UACU ,L_IACU ,L_OACU ,L_OCIR ,_______,
-        _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,                       _______,_______,_______,L_OTIL ,C_MACRO,_______,
+        _______,L_ATIL ,L_ACIR ,L_EACU ,_______,L_QUOT ,                       _______,L_UACU ,L_IACU ,L_OACU ,_______,_______,
+        _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,                       _______,_______,L_OCIR ,L_OTIL ,C_MACRO,_______,
         _______,L_AGRA ,_______,L_CEDI ,L_QUOV ,_______,                       _______,L_QUOM ,_______,_______,_______,_______,
                                   _______,_______,                                               _______,_______,
                                                   _______,_______,            _______,_______,
@@ -1114,8 +1116,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_RAISE] = LAYOUT_5x6(
           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       W_SLEFT ,_______ ,UP10    ,_______ ,_______ ,_______ ,
-          _______, OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,                       W_LEFT  ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
+          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
+          _______, OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,                       _______ ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
           _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                       _______ ,I_HIDTA ,I_GOSCM ,I_GTEST ,_______ ,_______ ,
                                   _______ ,_______ ,                                               _______ ,_______ ,
                                                   _______ ,_______ ,            _______ ,_______ ,
@@ -1125,8 +1127,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_GAME] = LAYOUT_5x6(
         _______ , KC_1    , KC_2  , KC_3  , KC_4  , KC_5  ,                         KC_6  , KC_7  , KC_8  , KC_9  , KC_0   ,SETMAIN,
-        KC_ESC  , KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  ,                         KC_T  , KC_Y  , KC_U  , KC_I  , KC_O   ,KC_P    ,
-        _______ , KC_LCTL , KC_A  , KC_S  , KC_D  , KC_F  ,                         KC_G  , KC_H  , KC_J  , KC_K  , KC_L   ,KC_QUOT ,
+        _______ , KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  ,                         KC_T  , KC_Y  , KC_U  , KC_I  , KC_O   ,KC_P    ,
+        KC_ESC  , KC_LCTL , KC_A  , KC_S  , KC_D  , KC_F  ,                         KC_G  , KC_H  , KC_J  , KC_K  , KC_L   ,KC_QUOT ,
         _______ , KC_LSFT , KC_Z  , KC_X  , KC_C  , KC_V  ,                         KC_B  , KC_N  , KC_M  ,KC_COMM, KC_DOT ,_______ ,
                             _______,KC_LALT,                                                        _______,_______,
                                          KC_SPACE, _______ ,                         _______ , _______ ,
@@ -1146,7 +1148,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_ADJUST] = LAYOUT_5x6(
-          _______,TO(_QWERTY),T_MODTAP,_______,_______,TO(_GAME),                 _______,_______,_______,_______,_______,KC_PWR ,
+          _______,TO(_QWERTY),T_MODTAP,_______,_______,TO(_GAME),                _______,_______,_______,_______,_______,KC_PWR ,
           _______,_______,RESET  ,_______,_______,_______,                       _______,_______,_______,RESET  ,_______,_______,
           _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
           _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
