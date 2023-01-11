@@ -334,7 +334,7 @@ void td_alttab_finished(qk_tap_dance_state_t *state, void *user_data) {
             SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(80) SS_TAP(X_TAB) SS_DELAY(20) SS_UP(X_LALT));
             break;
         case TD_DOUBLE_HOLD:
-            SEND_STRING(SS_DOWN(X_LALT) SS_DOWN(X_LCTL) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(30) SS_TAP(X_TAB) SS_DELAY(30) SS_UP(X_LALT) SS_UP(X_LCTL));
+            SEND_STRING(SS_DOWN(X_LALT) SS_DOWN(X_LCTL) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(30) SS_UP(X_LALT) SS_UP(X_LCTL));
             break;
         default:
             break;
@@ -686,11 +686,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case GO_APP3:
         case GO_APP4:
         case GO_APP5:
+        case GO_APP6:
+        case GO_APP7:
+        case GO_APP8:
+        case GO_APP9:
         case TABNEXT:
         case TABPREV:
         case TD_ATB:
             at_press_mouse = false;
-            break;
         default:
             break;
     }
@@ -1031,7 +1034,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                      C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,SELCT   ,FINDANY ,WIN_PGUP,TD_BACK ,XXXXXXX ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
+        _______,_______ ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,                      KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                                          _______ ,_______ ,
@@ -1063,10 +1066,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_MNAV] = LAYOUT_5x6(
-        _______,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_SELCT,                       TH_SELCT,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______,
-        KC_ESC ,CLOSETAB,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                       GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,CLOSETAB,_______,
-        _______,GO_APP3 ,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,                       GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,GO_APP3 ,_______,
+        _______ ,GO_APP8 ,GO_APP7 ,GO_APP6 ,GO_APP5 ,GO_APP4 ,                       GO_APP4 ,GO_APP5 ,GO_APP6 ,GO_APP7 ,GO_APP8 ,_______ ,
+        _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP3 ,                       GO_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+        KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                       GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+        _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,                       GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
                                 _______ ,_______ ,                                                   _______ ,_______ ,
                                             _______,_______,                       _______,_______,
                                             _______,_______,                       _______,_______,
@@ -1087,7 +1090,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
         _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE ,                       XXXXXXX ,W_SLEFT ,W_MAX   ,W_SRIGHT,XXXXXXX ,_______,
-        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,W_LOCK ,                       XXXXXXX ,W_LEFT  ,W_MIN   ,W_RIGHT ,XXXXXXX ,_______,
+        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX,                       XXXXXXX ,W_LEFT  ,W_MIN   ,W_RIGHT ,XXXXXXX ,_______,
         _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX,                       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                                   _______ ,_______ ,                                                 _______ ,_______ ,
                                             _______,_______,                       _______,_______,
