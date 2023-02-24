@@ -141,6 +141,9 @@ enum custom_keycodes {
     M_TSTRUN, // run tests
     M_TSTDEB, // debug tests
     M_SELWORD, // select word
+    M_BRWTB1, // browser tab 1
+    M_BRWTB2, // browser tab 2
+    M_BRWTB3, // browser tab 3
 };
 
 // #define L_SYMNAV MO(_SYMNAV)
@@ -164,6 +167,7 @@ enum custom_keycodes {
 #define OS_NUM  OSL(_NUMBER)
 #define OS_QWER OSL(_HIGHQWERTY)
 #define OS_RAIS OSL(_RAISE)
+#define OS_ADJ  OSL(_ADJUST)
 
 #define OSM_ALT  OSM(MOD_LALT)
 #define OSM_CTRL OSM(MOD_LCTL)
@@ -200,7 +204,7 @@ enum custom_keycodes {
 #define I_BUILD S(C(KC_B)) // build
 #define I_GOSCM A(KC_9) // RIDER: go to scm tab
 #define I_GTEST A(KC_8) // RIDER: go to tests tab
-#define I_HIDTA A(KC_0) // RIDER: hide tabs
+#define I_HIDTA S(KC_ESC) // RIDER: hide tabs
 
 #define GO_APP1 C(G(KC_1))
 #define GO_APP2 C(G(KC_2))
@@ -468,19 +472,15 @@ static td_state_t td_state_click;
 void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
     td_state_click = cur_dance(state);
     switch (td_state_click) {
-        case TD_SINGLE_TAP:
-            SEND_STRING(SS_TAP(X_BTN1));
-            break;
         case TD_SINGLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(500) SS_TAP(X_P)); // open link in a new private window
+            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(800) SS_TAP(X_P)); // open link in a new private window
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_DOWN(X_BTN1)); // hold mouse button 1 until it is pressed again
             break;
-        case TD_DOUBLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(50) SS_TAP(X_BTN1)); // open link in a new private window
-            break;
+        case TD_SINGLE_TAP:
         default:
+            SEND_STRING(SS_TAP(X_BTN1));
             break;
     }
 }
@@ -655,10 +655,6 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
-#define process_shifted_numbers(number, macro) if (shifted) keycode = macro; else macroKey = number; del_mods(MOD_BIT(KC_LSFT)); del_oneshot_mods(MOD_BIT(KC_LSFT)); del_weak_mods(MOD_BIT(KC_LSFT))
-#define process_key_tap_and_hold(keyOnTap, keyOnHold) if (pressed) hold ? tap_code16(keyOnHold) : tap_code16(keyOnTap)
-#define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode)
-
 // process macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
@@ -700,6 +696,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 
     uint16_t macroKey = 0;
     // special shifted number macros
+    #define process_shifted_numbers(number, macro) if (shifted) keycode = macro; else macroKey = number; del_mods(MOD_BIT(KC_LSFT)); del_oneshot_mods(MOD_BIT(KC_LSFT)); del_weak_mods(MOD_BIT(KC_LSFT))
     switch (keycode) {
             case M_N1:
                 process_shifted_numbers(KC_1, C_MACRO5);
@@ -741,37 +738,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     }
 
     // tap-hold key macros
+    #define process_tap_and_hold(actionOnTap, actionOnHold) if (pressed) hold ? actionOnHold : actionOnTap; return false;
+    #define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode); return false;
     switch (keycode) {
         case TH_MINS:
             process_double_tap_on_hold(KC_MINS);
-            return false;
         case TH_EQL:
             process_double_tap_on_hold(KC_EQL);
-            return false;
         case TH_PLUS:
             process_double_tap_on_hold(KC_PLUS);
-            return false;
         case TH_AMPR:
             process_double_tap_on_hold(KC_AMPR);
-            return false;
         case TH_PIPE:
             process_double_tap_on_hold(KC_PIPE);
-            return false;
         case TH_BSLS:
             process_double_tap_on_hold(KC_BSLS);
-            return false;
         case TH_SLSH:
             process_double_tap_on_hold(KC_SLSH);
-            return false;
         case TH_EXLM:
-            if (pressed) hold ? SEND_STRING("!=") : SEND_STRING("!");
-            return false;
+            process_tap_and_hold(SEND_STRING("!"), SEND_STRING("!="));
         case TH_HOME:
-            if (pressed) hold ? tap_code16(C(KC_HOME)) : tap_code16(KC_HOME);
-            return false;
+            process_tap_and_hold(tap_code16(KC_HOME), tap_code16(C(KC_HOME)));
         case TH_END:
-            if (pressed) hold ? tap_code16(C(KC_END)) : tap_code16(KC_END);
-            return false;
+            process_tap_and_hold(tap_code16(KC_END), tap_code16(C(KC_END)));
+        case TH_CLIC2:
+            process_tap_and_hold(tap_code16(KC_BTN3), tap_code(KC_BTN2));
         case TH_SELCT:
             if (hold){
                 if (pressed) SEND_STRING(SS_DOWN(X_BTN1));
@@ -780,21 +771,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C))); // select hovered text and copy it
             }
             return false;
-        case TH_CLIC2:
-            if (hold){
-                if (pressed) tap_code(KC_BTN2);
-            }else{
-                if (pressed) tap_code(KC_BTN3);
-            }
-            return false;
     }
 
     // special key macros
     if (pressed) {
         switch (keycode) {
             case SETMAIN:
-                clear_keyboard();
+                // tap_code16(SH_OFF);
                 layer_clear();
+                clear_keyboard();
                 return false;
             case WINTAP:
                 SEND_STRING(SS_TAP(X_LGUI));
@@ -1009,6 +994,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case M_TSTDEB:
                 SEND_STRING(SS_LSFT(SS_TAP(X_F5)) SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_D)));
                 return false;
+            case M_BRWTB1:
+                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_1)));
+                return false;
+            case M_BRWTB2:
+                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_2)));
+                return false;
+            case M_BRWTB3:
+                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_3)));
+                return false;
         }
     }
     return true;
@@ -1022,146 +1016,146 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //     6  , 3  , 2  , 1  , 1  , 2  ,
 
     [_QWERTY] = LAYOUT_5x6(
-     ADJ(KC_ESC), M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,                        M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
-        KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                        KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,SET_NAV,
-        OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                        KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
-        SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,TD_COMM, TD_DOT , TD_SLSH,SETMAIN,
-                          KC_WH_U,KC_WH_D,                                                      KC_WH_D, KC_WH_U,
-                              LT(_NAV, KC_BSPC),OSM_SHFT,                        LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
                                         SH_OS  ,TD_ALTAB,                        TD_ALTAB, SH_OS,
                                         KC_LOCK,KC_BTN1 ,                        KC_BTN1 , KC_LOCK
+        OS_ADJ  , M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,           M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
+        KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,SET_NAV,
+        OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,           KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
+        SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TD_COMM, TD_DOT , TD_SLSH,SETMAIN,
+                          KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
+                              LT(_NAV, KC_BSPC),OSM_SHFT,           LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
     ),
 
     [_NAV] = LAYOUT_5x6(
-        _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                      C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,_______ ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,                      DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
-        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                      KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
-        _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,                      KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
-                         _______ ,_______ ,                                                          _______ ,_______ ,
-                                LT(_RAISE, KC_BSPC),_______,                       LT(_RAISE, KC_ENTER), TD_THUMBR,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______
+        _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
+        _______,XXXXXXX ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
+        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
+        _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
+                         _______ ,_______ ,                                           _______ ,_______ ,
+                                 LT(_RAISE, KC_BSPC),_______,       LT(_RAISE, KC_ENTER), TD_THUMBR,
+                                             _______,_______,       _______,_______,
+                                             _______,_______,       _______,_______
     ),
 
     [_FUNC] = LAYOUT_5x6(
-        _______,_______ ,_______ ,_______ ,_______ ,_______ ,                      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______,CLOSEAPP,BROWSE  ,BROWSEP ,XXXXXXX ,PRINTSCR,                      KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
-        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,XXXXXXX ,                      WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
-        _______,SAVENOTE,DT_MOVE ,DT_CPYTO,DT_CPYFR,XXXXXXX ,                      KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
-                         _______ ,_______ ,                                                          _______ ,_______ ,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______
+        _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______,XXXXXXX ,BROWSEP ,BROWSE  ,M_BRWTB1,M_BRWTB2,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
+        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,M_BRWTB3,       WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
+        _______,SAVENOTE,DT_MOVE ,DT_CPYTO,DT_CPYFR,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
+                         _______ ,_______ ,                                             _______ ,_______ ,
+                                           _______ ,_______ ,      _______ ,_______ ,
+                                           _______ ,_______ ,      _______ ,_______ ,
+                                           _______ ,_______ ,      _______ ,_______
     ),
 
     [_SYMBOLS] = LAYOUT_5x6(
-          _______,_______ ,_______ ,_______ ,_______ ,_______ ,                    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-          _______,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                    TH_AMPR ,M_QUO3  ,M_BB3   ,KC_PERC ,XXXXXXX ,_______ ,
-          KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,                    TH_PIPE ,M_QUO1  ,M_BB1   ,KC_AT   ,XXXXXXX ,KC_SCLN ,
-          _______,XXXXXXX ,KC_ASTR ,TH_SLSH ,TH_BSLS ,KC_COLON,                    M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,XXXXXXX ,_______ ,
-                                    _______ ,_______ ,                                               _______ ,_______ ,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______
+        _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,       TH_AMPR ,M_QUO3  ,M_BB3   ,KC_PERC ,KC_RBRC ,_______ ,
+        KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,       TH_PIPE ,M_QUO1  ,M_BB1   ,KC_AT   ,KC_RPRN ,KC_SCLN ,
+        _______,XXXXXXX ,KC_ASTR ,TH_SLSH ,TH_BSLS ,KC_COLON,       M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,KC_RCBR ,_______ ,
+                                    _______ ,_______ ,                                _______ ,_______ ,
+                                           _______ ,_______ ,      _______ ,_______ ,
+                                           _______ ,_______ ,      _______ ,_______ ,
+                                           _______ ,_______ ,      _______ ,_______
     ),
 
     [_MNAV] = LAYOUT_5x6(
-        _______ ,GO_APP8 ,GO_APP7 ,GO_APP6 ,GO_APP5 ,GO_APP4 ,                       GO_APP4 ,GO_APP5 ,GO_APP6 ,GO_APP7 ,GO_APP8 ,_______ ,
-        _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP3 ,                       GO_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
-        KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                       GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
-        _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,                       GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
-                                _______ ,_______ ,                                                   _______ ,_______ ,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______
+        _______ ,GO_APP8 ,GO_APP7 ,GO_APP6 ,GO_APP5 ,GO_APP4 ,      GO_APP4 ,GO_APP5 ,GO_APP6 ,GO_APP7 ,GO_APP8 ,_______ ,
+        _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP3 ,      GO_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+        KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,      GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+        _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,      GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
+                                _______ ,_______ ,                                    _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______
     ),
 
     [_NUMBER] = LAYOUT_5x6(
-        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                     DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
-        _______ ,KC_EXLM ,KC_MINS ,KC_PLUS ,KC_EQL  ,KC_UNDS ,                     KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
-        _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,                     KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
-                                   _______ ,_______ ,                                                _______ ,_______ ,
-                                            _______ ,_______ ,                     _______ ,_______ ,
-                                            _______ ,_______ ,                     _______ ,_______ ,
-                                            _______ ,_______ ,                     _______ ,_______
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,      DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
+        _______ ,KC_EXLM ,KC_MINS ,KC_PLUS ,KC_EQL  ,KC_UNDS ,      KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
+        _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,      KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
+                                   _______ ,_______ ,                                 _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______
     ),
 
     [_WIN] = LAYOUT_5x6(
-        _______,_______ ,_______ ,_______ ,_______ ,_______,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE ,                       XXXXXXX ,W_SLEFT ,W_MAX   ,W_SRIGHT,XXXXXXX ,_______,
-        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX,                       XXXXXXX ,W_LEFT  ,W_MIN   ,W_RIGHT ,XXXXXXX ,_______,
-        _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX,                       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
-                                  _______ ,_______ ,                                                 _______ ,_______ ,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______,
-                                            _______,_______,                       _______,_______
+        _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
+        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       XXXXXXX ,W_SLEFT ,W_MAX   ,W_SRIGHT,XXXXXXX ,_______,
+        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       XXXXXXX ,W_LEFT  ,W_MIN   ,W_RIGHT ,XXXXXXX ,_______,
+        _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
+                                  _______ ,_______ ,                                  _______ ,_______ ,
+                                            _______,_______ ,       _______,_______,
+                                            _______,_______ ,       _______,_______,
+                                            _______,_______ ,       _______,_______
     ),
 
     [_LANG] = LAYOUT_5x6(
-        _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
-        _______,L_ATIL ,L_ACIR ,L_EACU ,_______,L_QUOT ,                       _______,L_UACU ,L_IACU ,L_OACU ,_______,_______,
-        _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,                       _______,_______,L_OCIR ,L_OTIL ,C_MACRO,_______,
-        _______,L_AGRA ,_______,L_CEDI ,L_QUOV ,_______,                       _______,L_QUOM ,_______,_______,_______,_______,
-                                  _______,_______,                                               _______,_______,
-                                                  _______,_______,            _______,_______,
-                                                  _______,_______,            _______,_______,
-                                                  _______,_______,            _______,_______
+        _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
+        _______,L_ATIL ,L_ACIR ,L_EACU ,_______,L_QUOT ,            _______,L_UACU ,L_IACU ,L_OACU ,_______,_______,
+        _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,            _______,_______,L_OCIR ,L_OTIL ,C_MACRO,_______,
+        _______,L_AGRA ,_______,L_CEDI ,L_QUOV ,_______,            _______,L_QUOM ,_______,_______,_______,_______,
+                                _______,_______,                                    _______,_______,
+                                        _______,_______,            _______,_______,
+                                        _______,_______,            _______,_______,
+                                        _______,_______,            _______,_______
     ),
 
     [_MODTAP] = LAYOUT_5x6(
-          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-          _______,TA(KC_A),TS(KC_S),TC(KC_D) ,_______ ,_______ ,                       _______ ,_______,TC(KC_K),TS(KC_L) ,_______ ,_______ ,
-          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-                                  _______ ,_______ ,                                               _______ ,_______ ,
-                                                  _______ ,_______ ,            _______ ,_______ ,
-                                                  _______ ,_______ ,            _______ ,_______ ,
-                                                  _______ ,_______ ,            _______ ,_______
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______,TA(KC_A),TS(KC_S),TC(KC_D) ,_______ ,_______ ,      _______ ,_______,TC(KC_K),TS(KC_L) ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+                                   _______ ,_______ ,                        _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______
     ),
 
     [_RAISE] = LAYOUT_5x6(
-          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                       _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
-          _______, OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,                       _______ ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
-          _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                       _______ ,I_HIDTA ,I_GOSCM ,I_GTEST ,_______ ,_______ ,
-                                  _______ ,_______ ,                                               _______ ,_______ ,
-                                                  _______ ,_______ ,            _______ ,_______ ,
-                                                  _______ ,_______ ,            _______ ,_______ ,
-                                                  _______ ,_______ ,            _______ ,_______
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
+        _______, OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         _______ ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
+        _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         _______ ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
+                                _______ ,_______ ,                                    _______ ,_______ ,
+                                            _______ ,_______ ,         _______ ,_______ ,
+                                            _______ ,_______ ,         _______ ,_______ ,
+                                            _______ ,_______ ,         _______ ,_______
     ),
 
     [_GAME] = LAYOUT_5x6(
-        _______ , KC_1    , KC_2  , KC_3  , KC_4  , KC_5  ,                         KC_6  , KC_7  , KC_8  , KC_9  , KC_0   ,SETMAIN,
-        _______ , KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  ,                         KC_T  , KC_Y  , KC_U  , KC_I  , KC_O   ,KC_P    ,
-        KC_ESC  , KC_LCTL , KC_A  , KC_S  , KC_D  , KC_F  ,                         KC_G  , KC_H  , KC_J  , KC_K  , KC_L   ,KC_QUOT ,
-        _______ , KC_LSFT , KC_Z  , KC_X  , KC_C  , KC_V  ,                         KC_B  , KC_N  , KC_M  ,KC_COMM, KC_DOT ,_______ ,
-                            _______,KC_LALT,                                                        _______,_______,
-                                         KC_SPACE, _______ ,                         _______ , _______ ,
-                                         _______ , _______ ,                         _______ , _______ ,
-                                         _______ , _______ ,                         _______ , _______
+        _______ , KC_1    , KC_2  , KC_3  , KC_4  , KC_5  ,          KC_6  , KC_7  , KC_8  , KC_9  , KC_0   ,_______ ,
+        _______ , KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  ,          KC_T  , KC_Y  , KC_U  , KC_I  , KC_O   ,_______ ,
+        KC_ESC  , KC_LCTL , KC_A  , KC_S  , KC_D  , KC_F  ,          KC_G  , KC_H  , KC_J  , KC_K  , KC_L   ,_______ ,
+        _______ , KC_LSFT , KC_Z  , KC_X  , KC_C  , KC_V  ,          KC_B  , KC_N  , KC_M  ,KC_COMM, KC_DOT ,_______ ,
+                            _______,KC_LALT,                                        _______,_______,
+                                         KC_SPACE, _______ ,         _______ , _______ ,
+                                         _______ , _______ ,         _______ , _______ ,
+                                         _______ , _______ ,         _______ , _______
     ),
 
     [_HIGHQWERTY] = LAYOUT_5x6(
-        _______ , KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9   , KC_0   ,_______ ,
-        KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                        KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,_______ ,
-        KC_ESC ,  KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                        KC_H  , KC_J  , KC_K  , KC_L   , KC_QUOT,_______ ,
-        _______ , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,KC_COMM, KC_DOT , KC_SLSH,_______ ,
-                        _______, _______,                                                      _______, _______,
-                                         KC_BSPC , _______ ,                         KC_ENT  ,KC_SPACE,
-                                         _______ , _______ ,                         _______ ,_______ ,
-                                         _______ , _______ ,                         _______ ,_______
+        _______ , KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,            KC_6  , KC_7  , KC_8  , KC_9   , KC_0   ,_______ ,
+        KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,            KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,_______ ,
+        KC_ESC ,  KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,            KC_H  , KC_J  , KC_K  , KC_L   , KC_QUOT,_______ ,
+        _______ , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,            KC_N  , KC_M  ,KC_COMM, KC_DOT , KC_SLSH,_______ ,
+                        _______, _______,                                           _______, _______,
+                                         KC_BSPC , _______ ,           KC_ENT  ,KC_SPACE,
+                                         _______ , _______ ,           _______ ,_______ ,
+                                         _______ , _______ ,           _______ ,_______
     ),
 
     [_ADJUST] = LAYOUT_5x6(
-          _______,TO(_QWERTY),T_MODTAP,_______,_______,TO(_GAME),                _______,_______,_______,_______,_______,KC_PWR ,
-          _______,_______,RESET  ,_______,_______,_______,                       _______,_______,_______,RESET  ,_______,_______,
-          _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
-          _______,_______,_______,_______,_______,_______,                       _______,_______,_______,_______,_______,_______,
-                                  _______,_______,                                               _______,_______,
-                                                  _______,_______,            _______,_______,
-                                                  _______,_______,            _______,_______,
-                                                  _______,_______,            _______,_______
+        SETMAIN,TO(_QWERTY),T_MODTAP,_______,_______,TO(_GAME),     _______,_______,_______,_______,_______,KC_PWR ,
+        _______,_______,RESET  ,_______,_______,_______,            _______,_______,_______,RESET  ,_______,_______,
+        _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
+        _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
+                                _______,_______,                                    _______,_______,
+                                        _______,_______,            _______,_______,
+                                        _______,_______,            _______,_______,
+                                        _______,_______,            _______,_______
     ),
 };
 
