@@ -199,6 +199,7 @@ enum custom_keycodes {
 
 // ide specific commands
 #define FINDANY S(C(KC_P)) // fuzzy search of anything
+#define ASK A(S(C(KC_F))) // ai assistance
 #define GOTO C(KC_SCLN) // jump to line/column in my IDE setup
 #define I_STOP  S(KC_F5) // stop debug/run
 #define I_BUILD S(C(KC_B)) // build
@@ -245,18 +246,21 @@ enum custom_keycodes {
 // this is a trick to easily diferentiate between tap and hold, as explained here:
 // https://getreuer.info/posts/keyboards/triggers/index.html
 // TLDR: the layer and the keycode don't mean anything, they are used as identifiers only.
-#define TH_MINS LT(_HIGHQWERTY, KC_MINS)
-#define TH_EQL  LT(_HIGHQWERTY, KC_EQL)
-#define TH_PLUS LT(_HIGHQWERTY, KC_0)
-#define TH_EXLM LT(_HIGHQWERTY, KC_1)
-#define TH_BSLS LT(_HIGHQWERTY, KC_2)
 #define TH_AMPR LT(_HIGHQWERTY, KC_AMPR)
-#define TH_PIPE LT(_HIGHQWERTY, KC_PIPE)
-#define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
-#define TH_HOME LT(_HIGHQWERTY, KC_HOME)
-#define TH_END  LT(_HIGHQWERTY, KC_END)
-#define TH_SELCT LT(_HIGHQWERTY, KC_S)
+#define TH_BSLS LT(_HIGHQWERTY, KC_2)
 #define TH_CLIC2 LT(_HIGHQWERTY, KC_Q)
+#define TH_COMM LT(_HIGHQWERTY, KC_COMM)
+#define TH_DOT LT(_HIGHQWERTY, KC_DOT)
+#define TH_END LT(_HIGHQWERTY, KC_END)
+#define TH_EQL LT(_HIGHQWERTY, KC_EQL)
+#define TH_EXLM LT(_HIGHQWERTY, KC_1)
+#define TH_HOME LT(_HIGHQWERTY, KC_HOME)
+#define TH_MINS LT(_HIGHQWERTY, KC_MINS)
+#define TH_PIPE LT(_HIGHQWERTY, KC_PIPE)
+#define TH_PLUS LT(_HIGHQWERTY, KC_0)
+#define TH_SCLN LT(_HIGHQWERTY, KC_SCLN)
+#define TH_SELCT LT(_HIGHQWERTY, KC_S)
+#define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
 
 // toggles
 #define SET_NAV TG(_NAV)
@@ -276,9 +280,6 @@ enum custom_keycodes {
 #define TD_ALFU TD(TDK_ALTFUN)
 #define TD_1SHOT TD(TDK_1SHOT)
 #define TD_CLICK TD(TDK_CLICK)
-#define TD_COMM TD(TDK_COMM)
-#define TD_DOT TD(TDK_DOT)
-#define TD_SLSH TD(TDK_SLSH)
 #define TD_BACK TD(TDK_BACK)
 #define TD_UNDO TD(TDK_UNDO)
 #define TD_THUMBR TD(TDK_THMBR1N)
@@ -485,42 +486,6 @@ void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_slash_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        case TD_SINGLE_TAP:
-            SEND_STRING(";");
-            break;
-        case TD_SINGLE_HOLD:
-            SEND_STRING("=");
-            break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(":");
-            break;
-        case TD_DOUBLE_HOLD:
-            SEND_STRING("==");
-            break;
-        case TD_TRIPLE_TAP:
-            break;
-        default:
-            break;
-    }
-}
-
-void td_comm_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        case TD_SINGLE_TAP:
-            SEND_STRING(",");
-            break;
-        case TD_SINGLE_HOLD:
-            SEND_STRING("?");
-            break;
-        default:
-            break;
-    }
-}
-
 void td_back_finished(qk_tap_dance_state_t *state, void *user_data) {
     td_state = cur_dance(state);
     switch (td_state) {
@@ -548,29 +513,6 @@ void td_undo_finished(qk_tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_TAP:
             SEND_STRING(SS_LCTL(SS_TAP(X_Z)));
-            break;
-    }
-}
-
-void td_dot_finished(qk_tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        case TD_SINGLE_TAP:
-            SEND_STRING(".");
-            break;
-        case TD_SINGLE_HOLD:
-            SEND_STRING("!");
-            break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING("..");
-            break;
-        case TD_DOUBLE_HOLD:
-            SEND_STRING(". ");
-            set_oneshot_mods(MOD_BIT(KC_LSFT));
-            break;
-        case TD_TRIPLE_TAP:
-            SEND_STRING("...");
-        default:
             break;
     }
 }
@@ -612,9 +554,6 @@ enum tap_dance{
     TDK_ALTFUN,
     TDK_1SHOT,
     TDK_CLICK,
-    TDK_COMM,
-    TDK_DOT,
-    TDK_SLSH,
     TDK_BACK,
     TDK_UNDO,
     TDK_THMBR1N,
@@ -628,11 +567,8 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [TDK_ATB] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_atb_finished, td_atb_reset),
     [TDK_ALTFUN] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_altfun_finished, td_altfun_reset),
     [TDK_THMBR1N] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_thmbr1n_finished, td_thmbr1n_reset),
-    [TDK_SLSH] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_slash_finished, NULL),
-    [TDK_COMM] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_comm_finished, NULL),
     [TDK_BACK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_back_finished, NULL),
     [TDK_UNDO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_undo_finished, NULL),
-    [TDK_DOT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_dot_finished, NULL)
 };
 
 // tapping term per key
@@ -645,9 +581,6 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 300;
         case TD_THUMBR:
             return 220;
-        case TD_DOT:
-        case TD_COMM:
-            return 180;
         case TD_1SHOT:
             return 170;
         default:
@@ -768,9 +701,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING(SS_DOWN(X_BTN1));
                 else SEND_STRING(SS_UP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C)));
             }else{
-                if (pressed) SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C))); // select hovered text and copy it
+                // select hovered text and copy it
+                if (pressed) SEND_STRING(SS_TAP(X_BTN1)SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C)));
             }
             return false;
+        case TH_DOT:
+            if (shifted){
+                if (pressed){
+                    del_mods(MOD_BIT(KC_LSFT));
+                    if (hold){
+                        SEND_STRING("./");
+                    }else{
+                        SEND_STRING(". ");
+                        set_oneshot_mods(MOD_BIT(KC_LSFT));
+                    }
+                    if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+                }
+                return false;
+            }else{
+                process_tap_and_hold(SEND_STRING("."), SEND_STRING("!"));
+            }
+        case TH_COMM:
+            process_tap_and_hold(SEND_STRING(","), SEND_STRING("?"));
+        case TH_SCLN:
+            process_tap_and_hold(SEND_STRING(";"), SEND_STRING("="));
     }
 
     // special key macros
@@ -1016,19 +970,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //     6  , 3  , 2  , 1  , 1  , 2  ,
 
     [_QWERTY] = LAYOUT_5x6(
-                                        SH_OS  ,TD_ALTAB,                        TD_ALTAB, SH_OS,
-                                        KC_LOCK,KC_BTN1 ,                        KC_BTN1 , KC_LOCK
         OS_ADJ  , M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,           M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
         KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,SET_NAV,
         OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,           KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
-        SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TD_COMM, TD_DOT , TD_SLSH,SETMAIN,
+        SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
                               LT(_NAV, KC_BSPC),OSM_SHFT,           LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
+                                      KC_ESC   ,TD_ALTAB,           TD_ALTAB, KC_ESC,
+                                      KC_ENTER ,KC_BTN1 ,           KC_BTN1 , KC_ENTER
     ),
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,XXXXXXX ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
+        _______,ASK     ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
@@ -1040,7 +994,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FUNC] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,XXXXXXX ,BROWSEP ,BROWSE  ,M_BRWTB1,M_BRWTB2,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
-        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,M_BRWTB3,       WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
+        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,WINTAP  ,       WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
         _______,SAVENOTE,DT_MOVE ,DT_CPYTO,DT_CPYFR,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
                          _______ ,_______ ,                                             _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
@@ -1051,7 +1005,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_SYMBOLS] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,       TH_AMPR ,M_QUO3  ,M_BB3   ,KC_PERC ,KC_RBRC ,_______ ,
-        KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,       TH_PIPE ,M_QUO1  ,M_BB1   ,KC_AT   ,KC_RPRN ,KC_SCLN ,
+        KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,       TH_PIPE ,M_QUO1  ,M_BB1   ,KC_AT   ,KC_RPRN ,_______ ,
         _______,XXXXXXX ,KC_ASTR ,TH_SLSH ,TH_BSLS ,KC_COLON,       M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,KC_RCBR ,_______ ,
                                     _______ ,_______ ,                                _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
@@ -1074,7 +1028,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,      DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
         _______ ,KC_EXLM ,KC_MINS ,KC_PLUS ,KC_EQL  ,KC_UNDS ,      KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
-        _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,      KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
+        _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,      KC_DEL  ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
                                    _______ ,_______ ,                                 _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
