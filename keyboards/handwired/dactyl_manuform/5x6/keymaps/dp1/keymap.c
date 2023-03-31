@@ -50,6 +50,7 @@ REFERENCES
     https://imgur.com/gallery/l1xNsoO
     https://keymapdb.com/
     https://precondition.github.io/home-row-mods
+    https://ryanis.cool/dactyl/
     https://stevep99.github.io/seniply/k
     https://www.keybr.com/
     https://www.reddit.com/r/olkb/comments/tnbvu3/planned_34_key_layout_to_reduce_rsi_pain_from/
@@ -206,6 +207,7 @@ enum custom_keycodes {
 #define I_GOSCM A(KC_9) // RIDER: go to scm tab
 #define I_GTEST A(KC_8) // RIDER: go to tests tab
 #define I_HIDTA S(KC_ESC) // RIDER: hide tabs
+#define I_EXPLR A(KC_1) // RIDER: show explorer
 
 #define GO_APP1 C(G(KC_1))
 #define GO_APP2 C(G(KC_2))
@@ -825,7 +827,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case BROWSEP:
                 SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
-                SEND_STRING(SS_LCTL(SS_LSFT(SS_TAP(X_P))) SS_DELAY(1000));
+                SEND_STRING(SS_LCTL(SS_LSFT(SS_TAP(X_P))) SS_DELAY(300));
                 SEND_STRING(SS_PASTE SS_DELAY(10));
                 SEND_STRING(SS_LCTL(SS_TAP(X_A)));
                 return false;
@@ -976,8 +978,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
                               LT(_NAV, KC_BSPC),OSM_SHFT,           LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
-                                      KC_ESC   ,TD_ALTAB,           TD_ALTAB, KC_ESC,
-                                      KC_ENTER ,KC_BTN1 ,           KC_BTN1 , KC_ENTER
+                                      KC_ENTER ,TD_ALTAB,           TD_ALTAB, KC_ENTER,
+                                      KC_ESC   ,KC_BTN1 ,           KC_BTN1 , KC_ESC
     ),
 
     [_NAV] = LAYOUT_5x6(
@@ -1072,7 +1074,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
         _______, OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         _______ ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
-        _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         _______ ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
+        _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         I_EXPLR ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
                                 _______ ,_______ ,                                    _______ ,_______ ,
                                             _______ ,_______ ,         _______ ,_______ ,
                                             _______ ,_______ ,         _______ ,_______ ,
