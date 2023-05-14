@@ -976,7 +976,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT_5x6(
         OS_ADJ  , M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,           M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
-        KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,SET_NAV,
+        OS_ONE  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,OS_ONE ,
         OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,           KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
