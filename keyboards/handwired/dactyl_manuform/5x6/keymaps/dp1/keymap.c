@@ -268,6 +268,7 @@ enum custom_keycodes {
 #define TH_SCLN LT(_HIGHQWERTY, KC_SCLN)
 #define TH_SELCT LT(_HIGHQWERTY, KC_S)
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
+#define TH_COLON LT(_HIGHQWERTY, KC_3)
 
 // toggles
 #define SET_NAV TO(_NAV)
@@ -700,6 +701,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_double_tap_on_hold(KC_BSLS);
         case TH_SLSH:
             process_double_tap_on_hold(KC_SLSH);
+        case TH_COLON:
+            process_tap_and_hold(SEND_STRING(":"), SEND_STRING(":\\"));
         case TH_EXLM:
             process_tap_and_hold(SEND_STRING("!"), SEND_STRING("!="));
         case TH_HOME:
@@ -1011,7 +1014,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,       TH_AMPR ,M_QUO3  ,M_BB3   ,KC_PERC ,KC_RBRC ,_______ ,
         KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,       TH_PIPE ,M_QUO1  ,M_BB1   ,KC_AT   ,KC_RPRN ,_______ ,
-        _______,XXXXXXX ,KC_ASTR ,TH_SLSH ,TH_BSLS ,KC_COLON,       M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,KC_RCBR ,_______ ,
+        _______,XXXXXXX ,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,       M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,KC_RCBR ,_______ ,
                                     _______ ,_______ ,                                _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
