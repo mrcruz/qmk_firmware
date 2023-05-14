@@ -113,6 +113,7 @@ enum custom_keycodes {
     M_MSEL, // mouse double click and ctrl c
     M_CIRC, // ^
     M_TILD, // ~
+    M_DOTSLH, // ./
     // # ENGLISH
     L_QUOM, // 'm
     L_QUOT, // 't
@@ -213,6 +214,7 @@ enum custom_keycodes {
 #define I_GTEST A(KC_8) // RIDER: go to tests tab
 #define I_HIDTA S(KC_ESC) // RIDER: hide tabs
 #define I_EXPLR A(KC_1) // RIDER: show explorer
+#define I_QUOT C(KC_QUOTE) // used to cycle tabs / maximize and minimize tabs
 
 #define GO_APP1 C(G(KC_1))
 #define GO_APP2 C(G(KC_2))
@@ -898,6 +900,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case M_TILD:
                 SEND_STRING("~ "); // ~
                 return false;
+            case M_DOTSLH:
+                SEND_STRING("./"); // ./
+                return false;
             case L_QUOM:
                 SEND_STRING("' m"); // 'm
                 return false;
@@ -969,7 +974,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     }
     return true;
 }
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // accessibility map
     //     10 , 4  , 4  , 3  , 3  , 5  ,
@@ -1014,7 +1018,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,       TH_AMPR ,M_QUO3  ,M_BB3   ,KC_PERC ,KC_RBRC ,_______ ,
         KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,       TH_PIPE ,M_QUO1  ,M_BB1   ,KC_AT   ,KC_RPRN ,_______ ,
-        _______,XXXXXXX ,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,       M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,KC_RCBR ,_______ ,
+        _______,M_DOTSLH,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,       M_TILD  ,M_QUO2  ,M_BB2   ,M_CIRC  ,KC_RCBR ,_______ ,
                                     _______ ,_______ ,                                _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
@@ -1090,7 +1094,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_RAISE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,W_MIN   ,W_MAX   ,W_SLEFT ,W_LEFT  ,_______ ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
-        _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         _______ ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
+        _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         I_QUOT  ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
         _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         I_EXPLR ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
                                 _______ ,_______ ,                                    _______ ,_______ ,
                                             _______ ,_______ ,         _______ ,_______ ,
