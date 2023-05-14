@@ -581,10 +581,10 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TD_ALTAB:
-            return 320;
+            return 280;
         case TH_END:
         case TH_HOME:
-            return 300;
+            return 250;
         case TD_THUMBR:
             return 220;
         case TD_1SHOT:
