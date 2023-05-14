@@ -310,7 +310,7 @@ typedef enum {
     TD_TRIPLE_HOLD,
 } td_state_t;
 
-td_state_t cur_dance(qk_tap_dance_state_t *state) {
+td_state_t cur_dance(tap_dance_state_t *state) {
     if (state->count == 1) {
         if (!state->pressed) return TD_SINGLE_TAP;
         else return TD_SINGLE_HOLD;
@@ -326,11 +326,11 @@ td_state_t cur_dance(qk_tap_dance_state_t *state) {
 
 static td_state_t td_state;
 
-td_state_t cur_dance(qk_tap_dance_state_t *state);
+td_state_t cur_dance(tap_dance_state_t *state);
 
 static td_state_t td_state_alttab;
 static bool at_press_mouse;
-void td_alttab_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_alttab_finished(tap_dance_state_t *state, void *user_data) {
     td_state_alttab = cur_dance(state);
     switch (td_state_alttab) {
         case TD_SINGLE_TAP:
@@ -352,7 +352,7 @@ void td_alttab_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void alttab_reset(qk_tap_dance_state_t *state, void *user_data) {
+void alttab_reset(tap_dance_state_t *state, void *user_data) {
     bool oneshotShifted = (get_oneshot_mods() & MOD_BIT(KC_LSFT)) == MOD_BIT(KC_LSFT);
     bool regularShifted = (get_mods() & MOD_BIT(KC_LSFT)) == MOD_BIT(KC_LSFT);
     bool shifted = oneshotShifted || regularShifted;
@@ -372,7 +372,7 @@ void alttab_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 static td_state_t td_state_atb;
-void td_atb_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_atb_finished(tap_dance_state_t *state, void *user_data) {
     td_state_atb = cur_dance(state);
     switch (td_state_atb) {
         case TD_SINGLE_TAP:
@@ -389,7 +389,7 @@ void td_atb_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_atb_reset(qk_tap_dance_state_t *state, void *user_data) {
+void td_atb_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_state_atb) {
         case TD_SINGLE_HOLD:
             SEND_STRING(SS_UP(X_LCTL));
@@ -401,7 +401,7 @@ void td_atb_reset(qk_tap_dance_state_t *state, void *user_data) {
 
 
 static td_state_t td_state_altfun;
-void td_altfun_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_altfun_finished(tap_dance_state_t *state, void *user_data) {
     td_state_altfun = cur_dance(state);
     switch (td_state_altfun) {
         case TD_SINGLE_TAP:
@@ -415,7 +415,7 @@ void td_altfun_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_altfun_reset(qk_tap_dance_state_t *state, void *user_data) {
+void td_altfun_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_state_altfun) {
         case TD_SINGLE_TAP:
             clear_oneshot_layer_state(ONESHOT_PRESSED);
@@ -430,7 +430,7 @@ void td_altfun_reset(qk_tap_dance_state_t *state, void *user_data) {
 
 static td_state_t td_state_oneshot;
 uint8_t mod_state;
-void td_oneshot_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
     td_state_oneshot = cur_dance(state);
     mod_state = get_mods();
     if (mod_state == 0) {
@@ -454,7 +454,7 @@ void td_oneshot_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_oneshot_reset(qk_tap_dance_state_t *state, void *user_data) {
+void td_oneshot_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
             clear_oneshot_layer_state(ONESHOT_PRESSED);
@@ -476,7 +476,7 @@ void td_oneshot_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 static td_state_t td_state_click;
-void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_click_finished(tap_dance_state_t *state, void *user_data) {
     td_state_click = cur_dance(state);
     switch (td_state_click) {
         case TD_SINGLE_HOLD:
@@ -492,7 +492,7 @@ void td_click_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_back_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_back_finished(tap_dance_state_t *state, void *user_data) {
     td_state = cur_dance(state);
     switch (td_state) {
         default:
@@ -507,7 +507,7 @@ void td_back_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_undo_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_undo_finished(tap_dance_state_t *state, void *user_data) {
     td_state = cur_dance(state);
     switch (td_state) {
         default:
@@ -524,7 +524,7 @@ void td_undo_finished(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 static td_state_t td_state_thmbr1n;
-void td_thmbr1n_finished(qk_tap_dance_state_t *state, void *user_data) {
+void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
     td_state_thmbr1n = cur_dance(state);
     switch (td_state_thmbr1n) {
         case TD_SINGLE_TAP:
@@ -540,7 +540,7 @@ void td_thmbr1n_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_thmbr1n_reset(qk_tap_dance_state_t *state, void *user_data) {
+void td_thmbr1n_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_state_thmbr1n) {
         case TD_DOUBLE_TAP:
         case TD_SINGLE_TAP:
@@ -566,7 +566,7 @@ enum tap_dance{
 };
 
 // Tap Dance definitions
-qk_tap_dance_action_t tap_dance_actions[] = {
+tap_dance_action_t tap_dance_actions[] = {
     [TDK_CLICK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_click_finished, NULL),
     [TDK_1SHOT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oneshot_finished, td_oneshot_reset),
     [TDK_AT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_alttab_finished, alttab_reset),
@@ -1102,7 +1102,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_ADJUST] = LAYOUT_5x6(
         SETMAIN,TO(_QWERTY),T_MODTAP,_______,_______,TO(_GAME),     _______,_______,_______,_______,_______,KC_PWR ,
-        _______,_______,RESET  ,_______,_______,_______,            _______,_______,_______,RESET  ,_______,_______,
+        _______,_______,QK_BOOT,_______,_______,_______,            _______,_______,_______,QK_BOOT,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
                                 _______,_______,                                    _______,_______,
