@@ -28,6 +28,9 @@ MANUAL
     mods and layer methods
         https://github.com/qmk/qmk_firmware/blob/master/quantum/action_util.h
 
+HARDWARE
+    https://github.com/v0Ch/vfk-001/
+
 REFERENCES
     https://colemakmods.github.io/ergonomic-mods/wide.html
     https://configure.zsa.io/ergodox-ez/layouts/GWjD3/latest/1
@@ -93,7 +96,6 @@ enum custom_keycodes {
     C_MACRO4,
     C_MACRO5,
     DT_CPYTO, // copy + alttab + paste
-    DT_CPYFR, // alttab + copy + alttab + paste
     DT_MOVE, // cut + alttab + paste
     AUTOFIX,
     SAVENOTE, // copy + go to my notes app + paste + alttab
@@ -154,6 +156,7 @@ enum custom_keycodes {
 #define TA(kc) LALT_T(kc)
 #define TC(kc) LCTL_T(kc)
 #define TS(kc) LSFT_T(kc)
+#define TW(kc) LGUI_T(kc)
 
 #define CT_PGDN TC(KC_PGDN)
 #define SFT_NEXT TS(KC_F3)
@@ -265,9 +268,10 @@ enum custom_keycodes {
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
 
 // toggles
-#define SET_NAV TG(_NAV)
-#define SET_FUN TG(_FUNC)
-#define SET_NUM TG(_NUMBER)
+#define SET_NAV TO(_NAV)
+#define SET_FUN TO(_FUNC)
+#define SET_NUM TO(_NUMBER)
+#define SET_MNAV TO(_MNAV)
 #define T_MODTAP TG(_MODTAP)
 
 // software defined macros.
@@ -719,10 +723,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                     }
                     if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
                 }
-                return false;
             }else{
                 process_tap_and_hold(SEND_STRING("."), SEND_STRING("!"));
             }
+            return false;
         case TH_COMM:
             process_tap_and_hold(SEND_STRING(","), SEND_STRING("?"));
         case TH_SCLN:
@@ -849,13 +853,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 SEND_STRING(SS_PASTE SS_DELAY(20));
                 SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(10));
                 SEND_STRING(SS_ALTTAB);
-                return false;
-            case DT_CPYFR:
-                SEND_STRING(SS_ALTTAB SS_DELAY(100));
-                SEND_STRING(SS_COPY SS_DELAY(10));
-                SEND_STRING(SS_ALTTAB SS_DELAY(100));
-                SEND_STRING(SS_PASTE SS_DELAY(20));
-                SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(10));
                 return false;
             case SAVENOTE:
                 SEND_STRING(SS_COPY SS_DELAY(10));
@@ -997,7 +994,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,XXXXXXX ,BROWSEP ,BROWSE  ,M_BRWTB1,M_BRWTB2,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
         KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,WINTAP  ,       WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
-        _______,SAVENOTE,DT_MOVE ,DT_CPYTO,DT_CPYFR,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
+        _______,SAVENOTE,DT_MOVE ,DT_CPYTO,XXXXXXX ,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
                          _______ ,_______ ,                                             _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
@@ -1062,7 +1059,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MODTAP] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______,TA(KC_A),TS(KC_S),TC(KC_D) ,_______ ,_______ ,      _______ ,_______,TC(KC_K),TS(KC_L) ,_______ ,_______ ,
+        _______ ,TW(KC_A),TA(KC_S),TC(KC_D),TS(KC_F),_______ ,      _______ ,TS(KC_J),TC(KC_K),TA(KC_L),_______ ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
                                    _______ ,_______ ,                        _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
