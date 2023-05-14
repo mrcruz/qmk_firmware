@@ -75,6 +75,7 @@ REFERENCES
 #define _FUNC 8
 #define _WIN 9
 #define _MNAV 10
+#define _ONE 11
 #define _HIGHQWERTY 14
 #define _ADJUST 15
 
@@ -172,6 +173,7 @@ enum custom_keycodes {
 #define OS_QWER OSL(_HIGHQWERTY)
 #define OS_RAIS OSL(_RAISE)
 #define OS_ADJ  OSL(_ADJUST)
+#define OS_ONE  OSL(_ONE)
 
 #define OSM_ALT  OSM(MOD_LALT)
 #define OSM_CTRL OSM(MOD_LCTL)
@@ -298,6 +300,10 @@ enum custom_keycodes {
 #define SS_GOAPP(kc) SS_LGUI(SS_LCTL(SS_TAP(kc)))
 #define SS_BACK SS_DELAY(20)  SS_TAP(X_LEFT)
 
+// helpers
+#define GET_ONESHOT_SHIFT get_oneshot_mods() & MOD_BIT(KC_LSFT)
+#define GET_SHIFT get_mods() & MOD_BIT(KC_LSFT)
+
 //tap dances
 typedef enum {
     TD_NONE,
@@ -353,8 +359,8 @@ void td_alttab_finished(tap_dance_state_t *state, void *user_data) {
 }
 
 void alttab_reset(tap_dance_state_t *state, void *user_data) {
-    bool oneshotShifted = (get_oneshot_mods() & MOD_BIT(KC_LSFT)) == MOD_BIT(KC_LSFT);
-    bool regularShifted = (get_mods() & MOD_BIT(KC_LSFT)) == MOD_BIT(KC_LSFT);
+    bool oneshotShifted = GET_ONESHOT_SHIFT;
+    bool regularShifted = GET_SHIFT;
     bool shifted = oneshotShifted || regularShifted;
 
     switch (td_state_alttab) {
@@ -597,8 +603,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 // process macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
-    bool oneshotShifted = get_oneshot_mods() & MOD_BIT(KC_LSFT);
-    bool regularShifted = get_mods() & MOD_BIT(KC_LSFT);
+    bool oneshotShifted = GET_ONESHOT_SHIFT;
+    bool regularShifted = GET_SHIFT;
     bool shifted = oneshotShifted || regularShifted;
 
     // getting information to differentiate between presses and holds
@@ -975,14 +981,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
                               LT(_NAV, KC_BSPC),OSM_SHFT,           LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
-                                      KC_ENTER ,TD_ALTAB,           TD_ALTAB, KC_ENTER,
-                                      KC_ESC   ,KC_BTN1 ,           KC_BTN1 , KC_ESC
+                                      OS_ONE   ,TD_ALTAB,           TD_ALTAB, OS_ONE ,
+                                      SETMAIN  ,KC_BTN1 ,           KC_BTN1 , SETMAIN
     ),
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,ASK     ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,SET_FUN,
-        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,SET_NUM,
+        _______,ASK     ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
+        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,_______,
         _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                  LT(_RAISE, KC_BSPC),_______,       LT(_RAISE, KC_ENTER), TD_THUMBR,
@@ -994,7 +1000,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,XXXXXXX ,BROWSEP ,BROWSE  ,M_BRWTB1,M_BRWTB2,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
         KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,WINTAP  ,       WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
-        _______,SAVENOTE,DT_MOVE ,DT_CPYTO,XXXXXXX ,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
+        _______,XXXXXXX ,DT_MOVE ,DT_CPYTO,SAVENOTE,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
                          _______ ,_______ ,                                             _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
@@ -1026,7 +1032,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_NUMBER] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,      DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
-        _______ ,KC_EXLM ,KC_MINS ,KC_PLUS ,KC_EQL  ,KC_UNDS ,      KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
+        KC_ESC  ,KC_EXLM ,KC_MINS ,KC_PLUS ,KC_EQL  ,KC_UNDS ,      KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
         _______ ,XXXXXXX ,KC_ASTR ,KC_SLSH ,KC_BSLS ,KC_COLON,      KC_DEL  ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
                                    _______ ,_______ ,                                 _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
@@ -1054,6 +1060,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                         _______,_______,            _______,_______,
                                         _______,_______,            _______,_______,
                                         _______,_______,            _______,_______
+    ),
+
+    [_ONE] = LAYOUT_5x6(
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,SET_NUM ,SET_MNAV,SET_FUN ,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_FUN ,SET_MNAV,SET_NUM ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+                                   _______ ,_______ ,                        _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______ ,
+                                            _______ ,_______ ,      _______ ,_______
     ),
 
     [_MODTAP] = LAYOUT_5x6(
