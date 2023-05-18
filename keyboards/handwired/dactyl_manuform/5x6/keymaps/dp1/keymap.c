@@ -165,6 +165,7 @@ enum custom_keycodes {
 #define SFT_PGUP TS(KC_PGUP)
 #define WIN_PGUP LT(_WIN, KC_PGUP)
 #define WIN_NEXT LT(_WIN, KC_F3)
+#define ONE_TAB LT(_ONE, KC_TAB)
 
 // oneshots
 #define OS_FUNC OSL(_FUNC)
@@ -271,6 +272,7 @@ enum custom_keycodes {
 #define TH_SELCT LT(_HIGHQWERTY, KC_S)
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
 #define TH_COLON LT(_HIGHQWERTY, KC_3)
+#define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
 
 // toggles
 #define SET_NAV TO(_NAV)
@@ -291,8 +293,6 @@ enum custom_keycodes {
 #define TD_ALFU TD(TDK_ALTFUN)
 #define TD_1SHOT TD(TDK_1SHOT)
 #define TD_CLICK TD(TDK_CLICK)
-#define TD_BACK TD(TDK_BACK)
-#define TD_UNDO TD(TDK_UNDO)
 #define TD_THUMBR TD(TDK_THMBR1N)
 
 // macros
@@ -501,37 +501,6 @@ void td_click_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_back_finished(tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        default:
-            SEND_STRING(SS_LALT(SS_TAP(X_RIGHT)));
-            break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(SS_LALT(SS_TAP(X_LEFT)) SS_LALT(SS_TAP(X_LEFT)));
-            break;
-        case TD_SINGLE_TAP:
-            SEND_STRING(SS_LALT(SS_TAP(X_LEFT)));
-            break;
-    }
-}
-
-void td_undo_finished(tap_dance_state_t *state, void *user_data) {
-    td_state = cur_dance(state);
-    switch (td_state) {
-        default:
-            SEND_STRING(SS_LSFT(SS_LCTL(SS_TAP(X_Z))));
-            break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(SS_LCTL(SS_TAP(X_Z)));
-            SEND_STRING(SS_LCTL(SS_TAP(X_Z)));
-            break;
-        case TD_SINGLE_TAP:
-            SEND_STRING(SS_LCTL(SS_TAP(X_Z)));
-            break;
-    }
-}
-
 static td_state_t td_state_thmbr1n;
 void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
     td_state_thmbr1n = cur_dance(state);
@@ -569,8 +538,6 @@ enum tap_dance{
     TDK_ALTFUN,
     TDK_1SHOT,
     TDK_CLICK,
-    TDK_BACK,
-    TDK_UNDO,
     TDK_THMBR1N,
 };
 
@@ -582,8 +549,6 @@ tap_dance_action_t tap_dance_actions[] = {
     [TDK_ATB] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_atb_finished, td_atb_reset),
     [TDK_ALTFUN] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_altfun_finished, td_altfun_reset),
     [TDK_THMBR1N] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_thmbr1n_finished, td_thmbr1n_reset),
-    [TDK_BACK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_back_finished, NULL),
-    [TDK_UNDO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_undo_finished, NULL),
 };
 
 // tapping term per key
@@ -703,6 +668,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_double_tap_on_hold(KC_BSLS);
         case TH_SLSH:
             process_double_tap_on_hold(KC_SLSH);
+        case TH_BACK:
+            process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
         case TH_COLON:
             process_tap_and_hold(SEND_STRING(":"), SEND_STRING(":\\"));
         case TH_EXLM:
@@ -983,7 +950,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT_5x6(
         OS_ADJ  , M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,           M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
-        OS_ONE  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,OS_ONE ,
+        ONE_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,OS_ONE ,
         OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,           KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
@@ -994,9 +961,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,ASK     ,FINDANY ,WIN_PGUP,TD_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
+        _______,ASK     ,FINDANY ,WIN_PGUP,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,_______,
-        _______,TD_UNDO ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
+        _______,UNDO    ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                  LT(_RAISE, KC_BSPC),_______,       LT(_RAISE, KC_ENTER), TD_THUMBR,
                                              _______,_______,       _______,_______,
@@ -1026,7 +993,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_MNAV] = LAYOUT_5x6(
-        _______ ,GO_APP8 ,GO_APP7 ,GO_APP6 ,GO_APP5 ,GO_APP4 ,      GO_APP4 ,GO_APP5 ,GO_APP6 ,GO_APP7 ,GO_APP8 ,_______ ,
+        _______ ,W_MIN   ,W_MAX   ,W_SLEFT ,W_LEFT  ,W_RIGHT ,      W_RIGHT ,W_LEFT  ,W_SLEFT ,W_MAX   ,W_MIN   ,_______ ,
         _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP3 ,      GO_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
         KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,      GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
         _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,      GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
@@ -1072,7 +1039,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ONE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,SET_NUM ,SET_MNAV,SET_FUN ,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_FUN ,SET_MNAV,SET_NUM ,_______ ,
+        _______ ,SET_NUM ,SET_FUN ,SET_MNAV,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_MNAV,SET_FUN ,SET_NUM ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
                                    _______ ,_______ ,                        _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
@@ -1093,7 +1060,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_RAISE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,W_MIN   ,W_MAX   ,W_SLEFT ,W_LEFT  ,_______ ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
+        _______ ,W_MIN   ,W_MAX   ,W_SLEFT ,W_LEFT  ,W_RIGHT ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
         _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         I_QUOT  ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
         _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         I_EXPLR ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
                                 _______ ,_______ ,                                    _______ ,_______ ,
