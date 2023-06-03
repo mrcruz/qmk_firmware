@@ -435,21 +435,26 @@ void td_altfun_reset(tap_dance_state_t *state, void *user_data) {
     }
 }
 
+#define DEFAULT_ONESHOT_MOD MOD_BIT(KC_LCTL)
+
 static td_state_t td_state_oneshot;
-uint8_t mod_state;
 void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
     td_state_oneshot = cur_dance(state);
-    mod_state = get_mods();
+
+    uint8_t mod_state = get_mods();
     if (mod_state == 0) {
-        mod_state = MOD_BIT(KC_LCTL);
+        // when this TD is pressed we need to have at least one mod, since it does not make sense to use this TD wihout a mod.
+        mod_state = DEFAULT_ONESHOT_MOD;
     }
 
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
-            set_oneshot_layer(_HIGHQWERTY, ONESHOT_START);
+            // convert any mods to one shots
             add_oneshot_mods(mod_state);
+            set_oneshot_layer(_HIGHQWERTY, ONESHOT_START);
             break;
         case TD_SINGLE_HOLD:
+            // add default mods
             layer_on(_HIGHQWERTY);
             add_mods(mod_state);
             break;
@@ -475,7 +480,11 @@ void td_oneshot_reset(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             layer_off(_HIGHQWERTY);
-            del_mods(mod_state);
+
+            // only clear mods if only the default mod is being used
+            if (get_mods() == DEFAULT_ONESHOT_MOD) {
+                clear_mods();
+            }
             break;
         default:
             break;
