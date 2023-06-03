@@ -166,6 +166,7 @@ enum custom_keycodes {
 #define WIN_PGUP LT(_WIN, KC_PGUP)
 #define WIN_NEXT LT(_WIN, KC_F3)
 #define ONE_TAB LT(_ONE, KC_TAB)
+#define ONE_ESC LT(_ONE, KC_ESC)
 
 // oneshots
 #define OS_FUNC OSL(_FUNC)
@@ -239,8 +240,7 @@ enum custom_keycodes {
 #define W_RIGHT G(KC_RIGHT)
 #define W_MAX G(KC_UP)
 #define W_MIN G(KC_DOWN)
-#define W_SRIGHT S(G(KC_RIGHT))
-#define W_SLEFT S(G(KC_LEFT))
+#define W_SWTDSP S(G(KC_LEFT))
 #define W_DSKTPNEW C(G(KC_D))
 #define W_DSKTPCLOSE C(G(KC_F4))
 #define W_DSKTPLEFT C(G(KC_LEFT))
@@ -256,23 +256,26 @@ enum custom_keycodes {
 // this is a trick to easily diferentiate between tap and hold, as explained here:
 // https://getreuer.info/posts/keyboards/triggers/index.html
 // TLDR: the layer and the keycode don't mean anything, they are used as identifiers only.
-#define TH_AMPR LT(_HIGHQWERTY, KC_AMPR)
-#define TH_BSLS LT(_HIGHQWERTY, KC_2)
 #define TH_CLIC2 LT(_HIGHQWERTY, KC_Q)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
 #define TH_EQL LT(_HIGHQWERTY, KC_EQL)
-#define TH_EXLM LT(_HIGHQWERTY, KC_1)
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_MINS LT(_HIGHQWERTY, KC_MINS)
 #define TH_PIPE LT(_HIGHQWERTY, KC_PIPE)
-#define TH_PLUS LT(_HIGHQWERTY, KC_0)
 #define TH_SCLN LT(_HIGHQWERTY, KC_SCLN)
 #define TH_SELCT LT(_HIGHQWERTY, KC_S)
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
-#define TH_COLON LT(_HIGHQWERTY, KC_3)
 #define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
+#define TH_BSLS LT(_HIGHQWERTY, KC_9)
+#define TH_PLUS LT(_HIGHQWERTY, KC_8)
+#define TH_COLON LT(_HIGHQWERTY, KC_7)
+#define TH_EXLM LT(_HIGHQWERTY, KC_6)
+#define TH_AMPR LT(_HIGHQWERTY, KC_5)
+#define TH_APP3 LT(_HIGHQWERTY, KC_3)
+#define TH_APP2 LT(_HIGHQWERTY, KC_2)
+#define TH_APP1 LT(_HIGHQWERTY, KC_1)
 
 // toggles
 #define SET_NAV TO(_NAV)
@@ -332,10 +335,6 @@ td_state_t cur_dance(tap_dance_state_t *state) {
     }
     else return TD_UNKNOWN;
 }
-
-static td_state_t td_state;
-
-td_state_t cur_dance(tap_dance_state_t *state);
 
 static td_state_t td_state_alttab;
 static bool at_press_mouse;
@@ -407,7 +406,6 @@ void td_atb_reset(tap_dance_state_t *state, void *user_data) {
             break;
     }
 }
-
 
 static td_state_t td_state_altfun;
 void td_altfun_finished(tap_dance_state_t *state, void *user_data) {
@@ -563,6 +561,10 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 220;
         case TD_1SHOT:
             return 170;
+        case TH_APP1:
+        case TH_APP2:
+        case TH_APP3:
+            return 500;
         default:
             return TAPPING_TERM;
     }
@@ -602,6 +604,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TABNEXT:
         case TABPREV:
         case TD_ATB:
+        case W_MIN:
+        case W_MAX:
+        case W_SWTDSP:
+        case W_LEFT:
+        case W_RIGHT:
             at_press_mouse = false;
         default:
             break;
@@ -668,6 +675,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_double_tap_on_hold(KC_BSLS);
         case TH_SLSH:
             process_double_tap_on_hold(KC_SLSH);
+        case TH_APP1:
+            process_tap_and_hold(tap_code16(GO_APP1), tap_code16(S(GO_APP1)));
+        case TH_APP2:
+            process_tap_and_hold(tap_code16(GO_APP2), tap_code16(S(GO_APP2)));
+        case TH_APP3:
+            process_tap_and_hold(tap_code16(GO_APP3), tap_code16(S(GO_APP3)));
         case TH_BACK:
             process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
         case TH_COLON:
@@ -993,10 +1006,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_MNAV] = LAYOUT_5x6(
-        _______ ,W_MIN   ,W_MAX   ,W_SLEFT ,W_LEFT  ,W_RIGHT ,      W_RIGHT ,W_LEFT  ,W_SLEFT ,W_MAX   ,W_MIN   ,_______ ,
-        _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP3 ,      GO_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
-        KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,      GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
-        _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP1 ,      GO_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
+        _______ ,W_MIN   ,W_LEFT  ,W_SWTDSP,W_MAX   ,W_RIGHT ,      W_RIGHT ,W_MAX   ,W_SWTDSP,W_LEFT  ,W_MIN   ,_______ ,
+        _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_APP3 ,      TH_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+        KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_APP2 ,      TH_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+        _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TH_APP1 ,      TH_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
                                 _______ ,_______ ,                                    _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
@@ -1016,8 +1029,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       XXXXXXX ,W_SLEFT ,W_MAX   ,W_SRIGHT,XXXXXXX ,_______,
-        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       XXXXXXX ,W_LEFT  ,W_MIN   ,W_RIGHT ,XXXXXXX ,_______,
+        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
+        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
         _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                                   _______ ,_______ ,                                  _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
@@ -1060,7 +1073,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_RAISE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,W_MIN   ,W_MAX   ,W_SLEFT ,W_LEFT  ,W_RIGHT ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
         _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         I_QUOT  ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
         _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         I_EXPLR ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
                                 _______ ,_______ ,                                    _______ ,_______ ,
