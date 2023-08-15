@@ -58,6 +58,7 @@ REFERENCES
     https://www.keybr.com/
     https://www.reddit.com/r/olkb/comments/tnbvu3/planned_34_key_layout_to_reduce_rsi_pain_from/
     https://www.reddit.com/r/olkb/comments/y07cb8/new_multimode_use_for_caps_word/
+    https://github.com/dschil138/Fulcrum
     nice simpler one shot layer with thumb shift and ctrl https://www.youtube.com/watch?v=8wZ8FRwOzhU
 
 */
@@ -83,7 +84,6 @@ enum custom_keycodes {
     QWERTY = SAFE_RANGE,
     ALT_TAB,
     ALT_TABB,
-    SLOWTAB,
     M_BB1,
     M_BB2,
     M_BB3,
@@ -218,15 +218,15 @@ enum custom_keycodes {
 #define I_EXPLR A(KC_1) // RIDER: show explorer
 #define I_QUOT C(KC_QUOTE) // used to cycle tabs / maximize and minimize tabs
 
-#define GO_APP1 C(G(KC_1))
-#define GO_APP2 C(G(KC_2))
-#define GO_APP3 C(G(KC_3))
-#define GO_APP4 C(G(KC_4))
-#define GO_APP5 C(G(KC_5))
-#define GO_APP6 C(G(KC_6))
-#define GO_APP7 C(G(KC_7))
-#define GO_APP8 C(G(KC_8))
-#define GO_APP9 C(G(KC_9))
+#define GO_APP1 G(KC_1)
+#define GO_APP2 G(KC_2)
+#define GO_APP3 G(KC_3)
+#define GO_APP4 G(KC_4)
+#define GO_APP5 G(KC_5)
+#define GO_APP6 G(KC_6)
+#define GO_APP7 G(KC_7)
+#define GO_APP8 G(KC_8)
+#define GO_APP9 G(KC_9)
 
 #define MDNXT KC_MNXT
 #define MDPRV KC_MPRV
@@ -240,7 +240,7 @@ enum custom_keycodes {
 #define W_RIGHT G(KC_RIGHT)
 #define W_MAX G(KC_UP)
 #define W_MIN G(KC_DOWN)
-#define W_SWTDSP S(G(KC_LEFT))
+#define W_SWTDSP S(G(KC_LEFT)) // cycle window through displays
 #define W_DSKTPNEW C(G(KC_D))
 #define W_DSKTPCLOSE C(G(KC_F4))
 #define W_DSKTPLEFT C(G(KC_LEFT))
@@ -562,7 +562,7 @@ tap_dance_action_t tap_dance_actions[] = {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TD_ALTAB:
-            return 280;
+            return 200;
         case TH_END:
         case TH_HOME:
             return 250;
@@ -570,10 +570,12 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 220;
         case TD_1SHOT:
             return 170;
+        case TD_ATB:
+            return 200;
         case TH_APP1:
         case TH_APP2:
         case TH_APP3:
-            return 500;
+            return 800;
         default:
             return TAPPING_TERM;
     }
@@ -715,12 +717,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             if (shifted){
                 if (pressed){
                     del_mods(MOD_BIT(KC_LSFT));
-                    if (hold){
-                        SEND_STRING("./");
-                    }else{
-                        SEND_STRING(". ");
-                        set_oneshot_mods(MOD_BIT(KC_LSFT));
-                    }
+                    SEND_STRING(". ");
+                    set_oneshot_mods(MOD_BIT(KC_LSFT));
                     if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
                 }
             }else{
@@ -819,9 +817,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case ALT_TABB:
                 SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(50) SS_TAP(X_TAB) SS_DELAY(50) SS_TAP(X_TAB) SS_UP(X_LALT));
-                return false;
-            case SLOWTAB:
-                SEND_STRING(SS_LCTL(SS_LALT(SS_TAP(X_TAB))));
                 return false;
             case BROWSE:
                 SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
@@ -965,14 +960,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 }
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // accessibility map
-    //     10 , 4  , 4  , 3  , 3  , 5  ,
-    //     7  , 4  , 2  , 1  , 1  , 2  ,
-    //     3  , 2  , 1  , 0  , 0  , 1  ,
-    //     6  , 3  , 2  , 1  , 1  , 2  ,
+    //     11 , 5  , 5  , 4  , 4  , 6  ,
+    //     8  , 5  , 3  , 1  , 1  , 3  ,
+    //     4  , 3  , 2  , 0  , 0  , 2  ,
+    //     7  , 4  , 3  , 1  , 1  , 3  ,
 
     [_QWERTY] = LAYOUT_5x6(
         OS_ADJ  , M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,           M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
-        ONE_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,OS_ONE ,
+        KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,           KC_Y  , KC_U  , KC_I  , KC_O   , KC_P   ,KC_ESC ,
         OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,           KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
@@ -1038,9 +1033,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
-        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
-        _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
+        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
+        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
+        _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
                                   _______ ,_______ ,                                  _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
                                             _______,_______ ,       _______,_______,
@@ -1061,11 +1056,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ONE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,SET_NUM ,SET_FUN ,SET_MNAV,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_MNAV,SET_FUN ,SET_NUM ,_______ ,
-        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,SET_MNAV,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_MNAV,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,SET_NUM ,SET_FUN ,_______ ,      _______ ,SET_FUN ,SET_NUM ,_______ ,_______ ,_______ ,
                                    _______ ,_______ ,                        _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
-                                            _______ ,_______ ,      _______ ,_______ ,
+                                            SETMAIN ,_______ ,      _______ ,SETMAIN ,
                                             _______ ,_______ ,      _______ ,_______
     ),
 
@@ -1095,9 +1090,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______ , KC_1    , KC_2  , KC_3  , KC_4  , KC_5  ,          KC_6  , KC_7  , KC_8  , KC_9  , KC_0   ,_______ ,
         _______ , KC_TAB  , KC_Q  , KC_W  , KC_E  , KC_R  ,          KC_T  , KC_Y  , KC_U  , KC_I  , KC_O   ,_______ ,
         KC_ESC  , KC_LCTL , KC_A  , KC_S  , KC_D  , KC_F  ,          KC_G  , KC_H  , KC_J  , KC_K  , KC_L   ,_______ ,
-        _______ , KC_LSFT , KC_Z  , KC_X  , KC_C  , KC_V  ,          KC_B  , KC_N  , KC_M  ,KC_COMM, KC_DOT ,_______ ,
-                            _______,KC_LALT,                                        _______,_______,
-                                         KC_SPACE, _______ ,         _______ , _______ ,
+        KC_LALT , KC_LSFT , KC_Z  , KC_X  , KC_C  , KC_V  ,          KC_B  , KC_N  , KC_M  ,KC_COMM, KC_DOT ,_______ ,
+                            _______,_______,                                        _______,_______,
+                                         KC_SPACE, KC_ENT  ,         _______ , _______ ,
                                          _______ , _______ ,         _______ , _______ ,
                                          _______ , _______ ,         _______ , _______
     ),
@@ -1114,7 +1109,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_ADJUST] = LAYOUT_5x6(
-        SETMAIN,TO(_QWERTY),T_MODTAP,_______,_______,TO(_GAME),     _______,_______,_______,_______,_______,KC_PWR ,
+        SETMAIN,_______,T_MODTAP,_______,TO(_QWERTY),TO(_GAME),     _______,_______,_______,_______,_______,KC_PWR ,
         _______,_______,QK_BOOT,_______,_______,_______,            _______,_______,_______,QK_BOOT,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
