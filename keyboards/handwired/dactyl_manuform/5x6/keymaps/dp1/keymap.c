@@ -581,6 +581,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+#define clear_shift del_mods(MOD_BIT(KC_LSFT)); del_oneshot_mods(MOD_BIT(KC_LSFT));
+#define restore_shift if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+
 // process macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
@@ -592,7 +595,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     bool pressed = record->event.pressed;
     bool hold = record->tap.count == 0;
 
-    // after some key presses, we want to cancel the click on release of TDK_AT
+    // after some key presses, mostly keys in the _MNAV layer, we want to cancel the click on release of TDK_AT
     switch (keycode)
     {
         case TD_CLICK:
@@ -612,6 +615,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case GO_APP7:
         case GO_APP8:
         case GO_APP9:
+        case TH_APP1:
+        case TH_APP2:
+        case TH_APP3:
         case TABNEXT:
         case TABPREV:
         case TD_ATB:
@@ -758,9 +764,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case M_BB3:
                 if (shifted) {
-                    del_mods(MOD_BIT(KC_LSFT));
+                    clear_shift;
                     SEND_STRING("]");
-                    if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+                    restore_shift;
                 }else{
                     SEND_STRING("[]" SS_BACK);
                 }
@@ -781,18 +787,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case M_QUO2:
                 if (shifted) {
-                    del_mods(MOD_BIT(KC_LSFT));
+                    clear_shift;
                     SEND_STRING("' ");
-                    if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+                    restore_shift;
                 }else{
                     SEND_STRING("''" SS_BACK);
                 }
                 return false;
             case M_QUO3:
                 if (shifted) {
-                    del_mods(MOD_BIT(KC_LSFT));
+                    clear_shift;
                     SEND_STRING("` ");
-                    if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+                    restore_shift;
                 }else{
                     SEND_STRING("``" SS_BACK);
                 }
