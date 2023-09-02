@@ -33,7 +33,7 @@
 #define LAYER_STATE_16BIT
 
 // combo
-// #define COMBO_COUNT 1
+#define COMBO_COUNT 11
 
 // swap hands
 #define SWAP_HANDS_ENABLE
