@@ -177,6 +177,8 @@ enum custom_keycodes {
 #define OS_RAIS OSL(_RAISE)
 #define OS_ADJ  OSL(_ADJUST)
 #define OS_ONE  OSL(_ONE)
+#define OS_WIN  OSL(_WIN)
+
 
 #define OSM_ALT  OSM(MOD_LALT)
 #define OSM_CTRL OSM(MOD_LCTL)
@@ -575,7 +577,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case TH_APP1:
         case TH_APP2:
         case TH_APP3:
-            return 800;
+            return 600;
         default:
             return TAPPING_TERM;
     }
@@ -631,47 +633,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             break;
     }
 
-    uint16_t macroKey = 0;
     // special shifted number macros
-    #define process_shifted_numbers(number, macro) if (shifted) keycode = macro; else macroKey = number; del_mods(MOD_BIT(KC_LSFT)); del_oneshot_mods(MOD_BIT(KC_LSFT)); del_weak_mods(MOD_BIT(KC_LSFT))
+    #define process_shifted_keys(regular_key, shifted_key) if (shifted) { clear_shift;  tap_code16(shifted_key); } else { if (pressed) tap_code16(regular_key); } return false;
     switch (keycode) {
             case M_N1:
-                process_shifted_numbers(KC_1, C_MACRO5);
-                break;
+                process_shifted_keys(KC_1, KC_F1);
             case M_N2:
-                process_shifted_numbers(KC_2, C_MACRO4);
-                break;
+                process_shifted_keys(KC_2, KC_F2);
             case M_N3:
-                process_shifted_numbers(KC_3, C_MACRO3);
-                break;
+                process_shifted_keys(KC_3, KC_F3);
             case M_N4:
-                process_shifted_numbers(KC_4, C_MACRO2);
-                break;
+                process_shifted_keys(KC_4, KC_F4);
             case M_N5:
-                process_shifted_numbers(KC_5, C_MACRO1);
-                break;
+                process_shifted_keys(KC_5, KC_F5);
             case M_N6:
-                process_shifted_numbers(KC_6, C_MACRO1);
-                break;
+                process_shifted_keys(KC_6, KC_F6);
             case M_N7:
-                process_shifted_numbers(KC_7, C_MACRO2);
-                break;
+                process_shifted_keys(KC_7, KC_F7);
             case M_N8:
-                process_shifted_numbers(KC_8, C_MACRO3);
-                break;
+                process_shifted_keys(KC_8, KC_F8);
             case M_N9:
-                process_shifted_numbers(KC_9, C_MACRO4);
-                break;
+                process_shifted_keys(KC_9, KC_F9);
             case M_N0:
-                process_shifted_numbers(KC_0, C_MACRO5);
-                break;
-    }
-
-    if (macroKey != 0)
-    {
-        if (pressed){
-            tap_code16(macroKey);
-        }
+                process_shifted_keys(KC_0, KC_F10);
     }
 
     // tap-hold key macros
@@ -722,10 +706,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_DOT:
             if (shifted){
                 if (pressed){
-                    del_mods(MOD_BIT(KC_LSFT));
+                    clear_shift;
                     SEND_STRING(". ");
-                    set_oneshot_mods(MOD_BIT(KC_LSFT));
-                    if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+                    restore_shift;
                 }
             }else{
                 process_tap_and_hold(SEND_STRING("."), SEND_STRING("!"));
@@ -966,10 +949,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 }
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // accessibility map
-    //     11 , 5  , 5  , 4  , 4  , 6  ,
-    //     8  , 5  , 3  , 1  , 1  , 3  ,
-    //     4  , 3  , 2  , 0  , 0  , 2  ,
-    //     7  , 4  , 3  , 1  , 1  , 3  ,
+    //     11, 5 , 5 , 4 , 4 , 6 ,
+    //     8 , 5 , 3 , 1 , 1 , 3 ,
+    //     4 , 3 , 2 , 0 , 0 , 2 ,
+    //     7 , 4 , 3 , 1 , 1 , 3 ,
 
     [_QWERTY] = LAYOUT_5x6(
         OS_ADJ  , M_N1  , M_N2  , M_N3  , M_N4  , M_N5  ,           M_N6  , M_N7  , M_N8  , M_N9   , M_N0   ,W_LOCK ,
@@ -988,7 +971,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC, KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,_______,
         _______,UNDO    ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
-                                 LT(_RAISE, KC_BSPC),_______,       LT(_RAISE, KC_ENTER), TD_THUMBR,
+                                             _______,_______,       _______,TD_THUMBR,
                                              _______,_______,       _______,_______,
                                              _______,_______,       _______,_______
     ),
@@ -1039,9 +1022,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
+        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       MDMUTE  ,MDVOLU  ,_______ ,MDNXT   ,MDPRV   ,_______,
+        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       XXXXXXX ,MDVOLD  ,XXXXXXX ,MDPLY   ,MDSWI   ,_______,
+        _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
                                             _______,_______ ,       _______,_______,
@@ -1142,10 +1125,45 @@ const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
     {{5, 5}, {4, 5}, {3, 5}, {2, 5}, {1, 5}, {0, 5}}
 };
 
+// ============ COMBOS
 
-// ============ combos
+// 1 _______ 2 _______ 3 _______ 4 _______ 5
+// Q _______ W _______ E OS_WIN  R _______ T
+// A _______ S OS_FUNC D OS_SYM  F _______ G
+// Z _______ X OS_RAIS C OS_ONE  V _______ B
+//             SET_MNAV
 
-// const uint16_t PROGMEM combo_cs[] = {CT_PGDN, OS_CTRL, COMBO_END};
-// combo_t key_combos[COMBO_COUNT] = {
-//     COMBO(combo_cs, OS_CTSF),
-// };
+// single hand symetric combos
+const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
+const uint16_t PROGMEM comboDF[] = {KC_D, KC_F, COMBO_END};
+const uint16_t PROGMEM comboCV[] = {KC_C, KC_V, COMBO_END};
+const uint16_t PROGMEM comboMC[] = {KC_M, TH_COMM, COMBO_END};
+const uint16_t PROGMEM comboER[] = {KC_E, KC_R, COMBO_END};
+const uint16_t PROGMEM comboUI[] = {KC_U, KC_I, COMBO_END};
+const uint16_t PROGMEM comboSD[] = {KC_S, KC_D, COMBO_END};
+const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
+const uint16_t PROGMEM comboXC[] = {KC_X, KC_C, COMBO_END};
+const uint16_t PROGMEM comboCD[] = {TH_COMM, TH_DOT, COMBO_END};
+const uint16_t PROGMEM comboWE[] = {KC_W, KC_E, COMBO_END};
+const uint16_t PROGMEM comboIO[] = {KC_I, KC_O, COMBO_END};
+const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
+
+// dual hand combos
+const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
+
+combo_t key_combos[COMBO_COUNT] = {
+    COMBO(comboJK, OS_SYM),
+    COMBO(comboDF, OS_SYM),
+    COMBO(comboCV, OS_ONE),
+    COMBO(comboMC, OS_ONE),
+    COMBO(comboER, OS_WIN),
+    COMBO(comboUI, OS_WIN),
+    COMBO(comboSD, OS_FUNC),
+    COMBO(comboKL, OS_FUNC),
+    COMBO(comboXC, OS_RAIS),
+    COMBO(comboCD, OS_RAIS),
+    // COMBO(comboWE, OS_WIN),
+    // COMBO(comboIO, OS_WIN),
+    // COMBO(comboFJ, OS_ONE),
+    COMBO(comboMM, SET_MNAV),
+};
