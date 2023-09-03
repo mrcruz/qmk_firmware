@@ -12,7 +12,6 @@
 // tap dance timer
 #define TAPPING_TERM 180
 #define TAPPING_TERM_PER_KEY
-#define IGNORE_MOD_TAP_INTERRUPT
 
 // mouse
 #undef MOUSEKEY_MAX_SPEED

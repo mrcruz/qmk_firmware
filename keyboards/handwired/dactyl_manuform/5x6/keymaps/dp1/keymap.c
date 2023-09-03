@@ -24,10 +24,6 @@ KNOW HOW
         *  Letters used in common words as a double. For example 'p' in 'pepper'. If a tap dance function existed on the
         *    letter 'p', the word 'pepper' would be quite frustating to type.
 
-MANUAL
-    mods and layer methods
-        https://github.com/qmk/qmk_firmware/blob/master/quantum/action_util.h
-
 HARDWARE
     https://github.com/v0Ch/vfk-001/
 
@@ -634,7 +630,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     }
 
     // special shifted number macros
-    #define process_shifted_keys(regular_key, shifted_key) if (shifted) { clear_shift;  tap_code16(shifted_key); } else { if (pressed) tap_code16(regular_key); } return false;
+    #define process_shifted_keys(regular_key, shifted_key) if (shifted) { clear_shift;  tap_code16(shifted_key); restore_shift; } else { if (pressed) tap_code16(regular_key); } return false;
     switch (keycode) {
             case M_N1:
                 process_shifted_keys(KC_1, KC_F1);
@@ -1045,8 +1041,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_ONE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,_______ ,_______ ,SET_MNAV,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_MNAV,_______ ,_______ ,_______ ,
-        _______ ,_______ ,_______ ,SET_NUM ,SET_FUN ,_______ ,      _______ ,SET_FUN ,SET_NUM ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,SET_NUM ,SET_FUN ,SET_NAV ,_______ ,      _______ ,SET_NAV ,SET_FUN ,SET_NUM ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
                           _______ ,_______ ,                                          _______ ,_______ ,
                                             _______ ,_______ ,      _______ ,_______ ,
                                             SETMAIN ,_______ ,      _______ ,SETMAIN ,
@@ -1129,11 +1125,11 @@ const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
 
 // 1 _______ 2 _______ 3 _______ 4 _______ 5
 // Q _______ W _______ E OS_WIN  R _______ T
-// A _______ S OS_FUNC D OS_SYM  F _______ G
-// Z _______ X OS_RAIS C OS_ONE  V _______ B
+// A _______ S OS_ONE  D OS_SYM  F _______ G
+// Z _______ X OS_RAIS C OS_FUNC V _______ B
 //             SET_MNAV
 
-// single hand symetric combos
+// single hand combos
 const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM comboDF[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM comboCV[] = {KC_C, KC_V, COMBO_END};
@@ -1152,18 +1148,20 @@ const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
 const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
+    // symetric combos
     COMBO(comboJK, OS_SYM),
     COMBO(comboDF, OS_SYM),
-    COMBO(comboCV, OS_ONE),
-    COMBO(comboMC, OS_ONE),
+    COMBO(comboCV, OS_FUNC),
+    COMBO(comboMC, OS_FUNC),
     COMBO(comboER, OS_WIN),
     COMBO(comboUI, OS_WIN),
-    COMBO(comboSD, OS_FUNC),
-    COMBO(comboKL, OS_FUNC),
+    COMBO(comboSD, OS_ONE),
+    COMBO(comboKL, OS_ONE),
     COMBO(comboXC, OS_RAIS),
     COMBO(comboCD, OS_RAIS),
     // COMBO(comboWE, OS_WIN),
     // COMBO(comboIO, OS_WIN),
     // COMBO(comboFJ, OS_ONE),
+    // asymetric combos
     COMBO(comboMM, SET_MNAV),
 };
