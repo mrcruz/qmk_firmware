@@ -1,18 +1,17 @@
 /*
 
 TODO:
-    add combo to osm ctrl+alt?
     KC_REPEAT
     KC_STOP
     KC_LEAD https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_leader_key.md
     KC_LOCK https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_key_lock.md
 
 how to improve?
+    what am I using more?
     taps are less stressful than holds
     move things to one shot mods
-    what am I using more?
     single press actions should be one single shot away
-    everything 2 key presses away
+    goal: everything 2 key presses away
 
 KNOW HOW
     tap dance
@@ -226,12 +225,6 @@ enum custom_keycodes {
 #define GO_APP8 G(KC_8)
 #define GO_APP9 G(KC_9)
 
-#define MDNXT KC_MNXT
-#define MDPRV KC_MPRV
-#define MDPLY KC_MPLY
-#define MDVOLU KC_VOLU
-#define MDVOLD KC_VOLD
-#define MDMUTE KC_MUTE
 #define MDSWI C(KC_SCRL) // software macro to switch audio output stream
 
 #define W_LEFT G(KC_LEFT)
@@ -956,7 +949,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         OS_SYM  , KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,           KC_H  , KC_J  , KC_K  , KC_L   , OS_LANG,OS_SYM ,
         SETMAIN , KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,           KC_N  , KC_M  ,TH_COMM, TH_DOT , TH_SCLN,SETMAIN,
                           KC_WH_U,KC_WH_D,                                         KC_WH_D, KC_WH_U,
-                              LT(_NAV, KC_BSPC),OSM_SHFT,           LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
+                             LT(_NAV, KC_BSPC) ,OSM_SHFT,           LT(_NAV, KC_ENTER), LT(_NAV, KC_SPACE),
                                       OS_ONE   ,TD_ALTAB,           TD_ALTAB, OS_ONE ,
                                       SETMAIN  ,KC_BTN1 ,           KC_BTN1 , SETMAIN
     ),
@@ -1018,8 +1011,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,MDPRV   ,MDNXT   ,_______ ,MDVOLU  ,MDMUTE  ,       MDMUTE  ,MDVOLU  ,_______ ,MDNXT   ,MDPRV   ,_______,
-        _______,MDSWI   ,MDPLY   ,XXXXXXX ,MDVOLD  ,XXXXXXX ,       XXXXXXX ,MDVOLD  ,XXXXXXX ,MDPLY   ,MDSWI   ,_______,
+        _______,KC_MPRV ,KC_MNXT ,_______ ,KC_VOLU ,KC_MUTE ,       KC_MUTE ,KC_VOLU ,_______ ,KC_MNXT ,KC_MPRV ,_______,
+        _______,MDSWI   ,KC_MPLY ,XXXXXXX ,KC_VOLD ,XXXXXXX ,       XXXXXXX ,KC_VOLD ,XXXXXXX ,KC_MPLY ,MDSWI   ,_______,
         _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
