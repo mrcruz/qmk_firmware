@@ -2,9 +2,6 @@
 
 TODO:
     KC_REPEAT
-    KC_STOP
-    KC_LEAD https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_leader_key.md
-    KC_LOCK https://github.com/samhocevar-forks/qmk-firmware/blob/master/docs/feature_key_lock.md
 
 how to improve?
     what am I using more?
@@ -60,6 +57,7 @@ REFERENCES
 */
 
 #include QMK_KEYBOARD_H
+#include "features/secrets.h"
 
 #define _QWERTY 0
 #define _MODTAP 1
@@ -139,6 +137,8 @@ enum custom_keycodes {
     M_N8,
     M_N9,
     M_N0,
+    M_SCRT1,
+    M_SCRT2,
     M_TSTRUN, // run tests
     M_TSTDEB, // debug tests
     M_SELWORD, // select word
@@ -716,6 +716,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     // special key macros
     if (pressed) {
         switch (keycode) {
+            case M_SCRT1:
+                SEND_STRING(SECRET1);
+                return false;
+            case M_SCRT2:
+                SEND_STRING(SECRET2);
+                return false;
             case SETMAIN:
                 // tap_code16(SH_OFF);
                 layer_clear();
@@ -960,8 +966,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,ASK     ,FINDANY ,TH_PGUP ,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
-        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,_______,
+        _______,ASK     ,FINDANY ,TH_PGUP ,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO   ,_______,
+        KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,QK_LOCK ,_______,
         _______,UNDO    ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                              _______,_______,       _______,TD_THUMBR,
@@ -1027,7 +1033,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_LANG] = LAYOUT_5x6(
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
         _______,L_ATIL ,L_ACIR ,L_EACU ,_______,L_QUOT ,            _______,L_UACU ,L_IACU ,L_OACU ,_______,_______,
-        _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,            _______,_______,L_OCIR ,L_OTIL ,C_MACRO,_______,
+        _______,L_AACU ,L_QUOS ,L_ECIR ,_______,_______,            M_SCRT2,M_SCRT1,L_OCIR ,L_OTIL ,QK_LEAD,_______,
         _______,L_AGRA ,_______,L_CEDI ,L_QUOV ,_______,            _______,L_QUOM ,_______,_______,_______,_______,
                         _______,_______,                                            _______,_______,
                                         _______,_______,            _______,_______,

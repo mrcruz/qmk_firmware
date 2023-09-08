@@ -35,7 +35,7 @@
 #define COMBO_COUNT 13
 
 // swap hands
-#define SWAP_HANDS_ENABLE
+// #define SWAP_HANDS_ENABLE
 
 
 // trackball
