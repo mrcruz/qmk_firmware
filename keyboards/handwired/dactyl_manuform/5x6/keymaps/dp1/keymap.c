@@ -37,9 +37,11 @@ REFERENCES
     https://getreuer.info/posts/keyboards/macros/index.html
     https://getreuer.info/posts/keyboards/triggers/index.html
     https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum
+    https://github.com/dschil138/Fulcrum
     https://github.com/getreuer/qmk-keymap/blob/main/README.md
     https://github.com/klavgen/klavgen
     https://github.com/manna-harbour/miryoku
+    https://github.com/nickcoutsos/dactyl-flatpacked/
     https://github.com/precondition/dactyl-manuform-keymap
     https://github.com/qmk/qmk_firmware/blob/master/docs/feature_dynamic_macros.md
     https://github.com/qmk/qmk_firmware/blob/master/keyboards/planck/keymaps/jeebak/keymap.c
@@ -53,7 +55,6 @@ REFERENCES
     https://www.keybr.com/
     https://www.reddit.com/r/olkb/comments/tnbvu3/planned_34_key_layout_to_reduce_rsi_pain_from/
     https://www.reddit.com/r/olkb/comments/y07cb8/new_multimode_use_for_caps_word/
-    https://github.com/dschil138/Fulcrum
     nice simpler one shot layer with thumb shift and ctrl https://www.youtube.com/watch?v=8wZ8FRwOzhU
 
 */
@@ -247,26 +248,27 @@ enum custom_keycodes {
 // this is a trick to easily diferentiate between tap and hold, as explained here:
 // https://getreuer.info/posts/keyboards/triggers/index.html
 // TLDR: the layer and the keycode don't mean anything, they are used as identifiers only.
+#define TH_AMPR LT(_HIGHQWERTY, KC_5)
+#define TH_APP1 LT(_HIGHQWERTY, KC_1)
+#define TH_APP2 LT(_HIGHQWERTY, KC_2)
+#define TH_APP3 LT(_HIGHQWERTY, KC_3)
+#define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
+#define TH_BSLS LT(_HIGHQWERTY, KC_9)
 #define TH_CLIC2 LT(_HIGHQWERTY, KC_Q)
+#define TH_COLON LT(_HIGHQWERTY, KC_7)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
 #define TH_EQL LT(_HIGHQWERTY, KC_EQL)
+#define TH_EXLM LT(_HIGHQWERTY, KC_6)
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_MINS LT(_HIGHQWERTY, KC_MINS)
+#define TH_PGUP LT(_HIGHQWERTY, KC_PGUP)
 #define TH_PIPE LT(_HIGHQWERTY, KC_PIPE)
+#define TH_PLUS LT(_HIGHQWERTY, KC_8)
 #define TH_SCLN LT(_HIGHQWERTY, KC_SCLN)
 #define TH_SELCT LT(_HIGHQWERTY, KC_S)
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
-#define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
-#define TH_BSLS LT(_HIGHQWERTY, KC_9)
-#define TH_PLUS LT(_HIGHQWERTY, KC_8)
-#define TH_COLON LT(_HIGHQWERTY, KC_7)
-#define TH_EXLM LT(_HIGHQWERTY, KC_6)
-#define TH_AMPR LT(_HIGHQWERTY, KC_5)
-#define TH_APP3 LT(_HIGHQWERTY, KC_3)
-#define TH_APP2 LT(_HIGHQWERTY, KC_2)
-#define TH_APP1 LT(_HIGHQWERTY, KC_1)
 
 // toggles
 #define SET_NAV TO(_NAV)
@@ -683,6 +685,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(tap_code16(KC_END), tap_code16(C(KC_END)));
         case TH_CLIC2:
             process_tap_and_hold(tap_code16(KC_BTN3), tap_code(KC_BTN2));
+        case TH_PGUP:
+            process_tap_and_hold(tap_code16(KC_PGUP), tap_code(KC_LGUI));
         case TH_SELCT:
             if (hold){
                 if (pressed) SEND_STRING(SS_DOWN(X_BTN1));
@@ -956,7 +960,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,ASK     ,FINDANY ,WIN_PGUP,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
+        _______,ASK     ,FINDANY ,TH_PGUP ,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,OS_FUNC ,_______,
         _______,UNDO    ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
@@ -1011,8 +1015,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
-        _______,KC_MPRV ,KC_MNXT ,_______ ,KC_VOLU ,KC_MUTE ,       KC_MUTE ,KC_VOLU ,_______ ,KC_MNXT ,KC_MPRV ,_______,
-        _______,MDSWI   ,KC_MPLY ,XXXXXXX ,KC_VOLD ,XXXXXXX ,       XXXXXXX ,KC_VOLD ,XXXXXXX ,KC_MPLY ,MDSWI   ,_______,
+        _______,XXXXXXX ,KC_MNXT ,KC_MPLY ,KC_VOLU ,KC_MUTE ,       KC_MUTE ,KC_VOLU ,KC_MPLY ,KC_MNXT ,XXXXXXX ,_______,
+        _______,XXXXXXX ,KC_MPRV ,MDSWI   ,KC_VOLD ,XXXXXXX ,       XXXXXXX ,KC_VOLD ,MDSWI   ,KC_MPRV ,XXXXXXX ,_______,
         _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
@@ -1055,8 +1059,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_RAISE] = LAYOUT_5x6(
         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,UP10    ,_______ ,_______ ,_______ ,
-        _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,OS_QWER ,_______ ,         I_QUOT  ,LEFT10  ,DOWN10  ,RIGHT10 ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,         I_QUOT  ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,         I_EXPLR ,I_HIDTA ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
                           _______ ,_______ ,                                          _______ ,_______ ,
                                             _______ ,_______ ,         _______ ,_______ ,
@@ -1116,13 +1120,6 @@ const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
 
 // ============ COMBOS
 
-// 1 _______ 2 _______ 3 _______ 4 _______ 5
-// Q _______ W _______ E OS_WIN  R _______ T
-// A _______ S OS_ONE  D OS_SYM  F _______ G
-// Z _______ X OS_RAIS C OS_FUNC V _______ B
-//             SET_MNAV
-
-// single hand combos
 const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM comboDF[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM comboCV[] = {KC_C, KC_V, COMBO_END};
@@ -1136,25 +1133,17 @@ const uint16_t PROGMEM comboCD[] = {TH_COMM, TH_DOT, COMBO_END};
 const uint16_t PROGMEM comboWE[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM comboIO[] = {KC_I, KC_O, COMBO_END};
 const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
-
-// dual hand combos
 const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
-    // symetric combos
-    COMBO(comboJK, OS_SYM),
-    COMBO(comboDF, OS_SYM),
-    COMBO(comboCV, OS_FUNC),
-    COMBO(comboMC, OS_FUNC),
-    COMBO(comboER, OS_WIN),
-    COMBO(comboUI, OS_WIN),
-    COMBO(comboSD, OS_ONE),
-    COMBO(comboKL, OS_ONE),
-    COMBO(comboXC, OS_RAIS),
-    COMBO(comboCD, OS_RAIS),
-    // COMBO(comboWE, OS_WIN),
-    // COMBO(comboIO, OS_WIN),
-    // COMBO(comboFJ, OS_ONE),
-    // asymetric combos
+    // left hand                                                    // right hand
+    COMBO(comboWE, OS_WIN),     /*COMBO(comboER, OS_WIN),*/         /*COMBO(comboUI, OS_WIN),*/ COMBO(comboIO, OS_WIN),
+    COMBO(comboSD, OS_ONE),     COMBO(comboDF, OS_SYM),             COMBO(comboJK, OS_SYM),     COMBO(comboKL, OS_ONE),
+    COMBO(comboXC, OS_RAIS),    COMBO(comboCV, OS_FUNC),            COMBO(comboMC, OS_FUNC),    COMBO(comboCD, OS_RAIS),
+
+    // other combos
     COMBO(comboMM, SET_MNAV),
+    // COMBO(comboFJ, OS_ONE),
+    COMBO(comboT1, OS_SYM),
+    COMBO(comboT2, OS_SYM),
 };
