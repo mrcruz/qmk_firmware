@@ -1134,6 +1134,8 @@ const uint16_t PROGMEM comboWE[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM comboIO[] = {KC_I, KC_O, COMBO_END};
 const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
 const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
+const uint16_t PROGMEM comboT1[] = {LT(_NAV, KC_BSPC), LT(_NAV, KC_SPACE), COMBO_END};
+const uint16_t PROGMEM comboT2[] = {LT(_NAV, KC_BSPC), LT(_NAV, KC_ENTER), COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
     // left hand                                                    // right hand

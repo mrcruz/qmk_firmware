@@ -7,5 +7,5 @@ My layout focuses on my RSI recovery.
 
 Features:
 * Keyboard centric operating system usage.  
-* Eye tracker integration
-* Symmetric mouse and navigation.
+* Eye tracker integration.
+* Symmetric mouse and operating system navigation.
