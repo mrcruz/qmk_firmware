@@ -248,26 +248,27 @@ enum custom_keycodes {
 // this is a trick to easily diferentiate between tap and hold, as explained here:
 // https://getreuer.info/posts/keyboards/triggers/index.html
 // TLDR: the layer and the keycode don't mean anything, they are used as identifiers only.
-#define TH_AMPR LT(_HIGHQWERTY, KC_5)
 #define TH_APP1 LT(_HIGHQWERTY, KC_1)
 #define TH_APP2 LT(_HIGHQWERTY, KC_2)
 #define TH_APP3 LT(_HIGHQWERTY, KC_3)
-#define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
-#define TH_BSLS LT(_HIGHQWERTY, KC_9)
-#define TH_CLIC2 LT(_HIGHQWERTY, KC_Q)
+#define TH_AMPR LT(_HIGHQWERTY, KC_5)
+#define TH_EXLM LT(_HIGHQWERTY, KC_6)
 #define TH_COLON LT(_HIGHQWERTY, KC_7)
+#define TH_PLUS LT(_HIGHQWERTY, KC_8)
+#define TH_BSLS LT(_HIGHQWERTY, KC_9)
+#define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
+#define TH_CLIC2 LT(_HIGHQWERTY, KC_Q)
+#define TH_SELCT LT(_HIGHQWERTY, KC_S)
+#define TH_FIND LT(_HIGHQWERTY, KC_P)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
 #define TH_EQL LT(_HIGHQWERTY, KC_EQL)
-#define TH_EXLM LT(_HIGHQWERTY, KC_6)
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_MINS LT(_HIGHQWERTY, KC_MINS)
 #define TH_PGUP LT(_HIGHQWERTY, KC_PGUP)
 #define TH_PIPE LT(_HIGHQWERTY, KC_PIPE)
-#define TH_PLUS LT(_HIGHQWERTY, KC_8)
 #define TH_SCLN LT(_HIGHQWERTY, KC_SCLN)
-#define TH_SELCT LT(_HIGHQWERTY, KC_S)
 #define TH_SLSH LT(_HIGHQWERTY, KC_SLSH)
 
 // toggles
@@ -687,6 +688,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(tap_code16(KC_BTN3), tap_code(KC_BTN2));
         case TH_PGUP:
             process_tap_and_hold(tap_code16(KC_PGUP), tap_code(KC_LGUI));
+        case TH_COMM:
+            process_tap_and_hold(SEND_STRING(","), SEND_STRING("?"));
+        case TH_SCLN:
+            process_tap_and_hold(SEND_STRING(";"), SEND_STRING("="));
+        case TH_FIND:
+            if(pressed){
+                if (hold){
+                    // BROWSEP
+                    SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
+                    SEND_STRING(SS_LCTL(SS_LSFT(SS_TAP(X_P))) SS_DELAY(300));
+                    SEND_STRING(SS_PASTE SS_DELAY(10));
+                    SEND_STRING(SS_LCTL(SS_TAP(X_A)));
+                }else{
+                    tap_code16(S(C(KC_P)));
+                }
+            }
+            return false;
         case TH_SELCT:
             if (hold){
                 if (pressed) SEND_STRING(SS_DOWN(X_BTN1));
@@ -707,10 +725,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 process_tap_and_hold(SEND_STRING("."), SEND_STRING("!"));
             }
             return false;
-        case TH_COMM:
-            process_tap_and_hold(SEND_STRING(","), SEND_STRING("?"));
-        case TH_SCLN:
-            process_tap_and_hold(SEND_STRING(";"), SEND_STRING("="));
+
     }
 
     // special key macros
@@ -966,7 +981,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
         _______,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,       C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______,
-        _______,ASK     ,FINDANY ,TH_PGUP ,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO   ,_______,
+        _______,ASK     ,TH_FIND ,TH_PGUP ,TH_BACK ,KC_TAB  ,       DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,GOTO    ,_______,
         KC_ESC ,TD_ALFU ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,       KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,QK_LOCK ,_______,
         _______,UNDO    ,CUT     ,COPY    ,PASTE   ,COMMENT ,       KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,KC_APP  ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
