@@ -34,6 +34,9 @@
 // combo
 #define COMBO_COUNT 13
 
+// custom flags
+#define IGNORE_MOD_TAP_ON_ONESHOT
+
 // swap hands
 // #define SWAP_HANDS_ENABLE
 

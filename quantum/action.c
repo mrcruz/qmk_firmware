@@ -373,6 +373,9 @@ void process_action(keyrecord_t *record, action_t action) {
     // notice we only clear the one shot layer if the pressed key is not a modifier.
     if (is_oneshot_layer_active() && event.pressed &&
         (action.kind.id == ACT_USAGE || !(IS_MODIFIER_KEYCODE(action.key.code)
+#    ifdef IGNORE_MOD_TAP_ON_ONESHOT
+        || (action.kind.id & ACT_MODS_TAP && (action.layer_tap.code == MODS_ONESHOT || action.layer_tap.code == MODS_TAP_TOGGLE))
+#    endif
 #    ifndef NO_ACTION_TAPPING
                                           || (tap_count == 0 && (action.kind.id == ACT_LMODS_TAP || action.kind.id == ACT_RMODS_TAP))
 #    endif
