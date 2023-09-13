@@ -995,7 +995,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_FUNC] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-        _______,XXXXXXX ,XXXXXXX ,BROWSE  ,BROWSEP ,M_BRWTB1,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
+        _______,XXXXXXX ,PIPMODE ,BROWSE  ,BROWSEP ,M_BRWTB1,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
         KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,KC_MYCM ,       XXXXXXX ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
         _______,XXXXXXX ,DT_MOVE ,DT_CPYTO,SAVENOTE,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
                          _______ ,_______ ,                                           _______ ,_______ ,
@@ -1040,6 +1040,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
         _______,XXXXXXX ,KC_MNXT ,KC_MPLY ,KC_VOLU ,KC_MUTE ,       KC_MUTE ,KC_VOLU ,KC_MPLY ,KC_MNXT ,XXXXXXX ,_______,
+        _______,XXXXXXX ,KC_MPRV ,MDSWI   ,KC_VOLD ,KC_MSEL ,       KC_MSEL ,KC_VOLD ,MDSWI   ,KC_MPRV ,XXXXXXX ,_______,
         _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
