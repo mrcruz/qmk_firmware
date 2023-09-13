@@ -13,6 +13,9 @@
 #define TAPPING_TERM 180
 #define TAPPING_TERM_PER_KEY
 
+// caps word
+#define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
+
 // mouse
 #undef MOUSEKEY_MAX_SPEED
 #define MOUSEKEY_MAX_SPEED 4
