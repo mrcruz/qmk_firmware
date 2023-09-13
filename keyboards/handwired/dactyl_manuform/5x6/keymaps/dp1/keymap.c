@@ -22,6 +22,8 @@ KNOW HOW
 
 HARDWARE
     https://github.com/v0Ch/vfk-001/
+    https://github.com/chenfucn/dactyl-pivot
+    https://www.printables.com/model/102789-dactyl-flex-w-threaded-tenting
 
 REFERENCES
     https://colemakmods.github.io/ergonomic-mods/wide.html
@@ -1037,7 +1039,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_WIN] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______,
         _______,XXXXXXX ,KC_MNXT ,KC_MPLY ,KC_VOLU ,KC_MUTE ,       KC_MUTE ,KC_VOLU ,KC_MPLY ,KC_MNXT ,XXXXXXX ,_______,
-        _______,XXXXXXX ,KC_MPRV ,MDSWI   ,KC_VOLD ,XXXXXXX ,       XXXXXXX ,KC_VOLD ,MDSWI   ,KC_MPRV ,XXXXXXX ,_______,
         _______,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,       XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                             _______,_______ ,       _______,_______,
@@ -1112,7 +1113,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_ADJUST] = LAYOUT_5x6(
-        SETMAIN,_______,T_MODTAP,_______,TO(_QWERTY),TO(_GAME),     _______,_______,_______,_______,_______,KC_PWR ,
         _______,_______,QK_BOOT,_______,_______,_______,            _______,_______,_______,QK_BOOT,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
@@ -1145,14 +1145,13 @@ const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM comboDF[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM comboCV[] = {KC_C, KC_V, COMBO_END};
 const uint16_t PROGMEM comboMC[] = {KC_M, TH_COMM, COMBO_END};
-const uint16_t PROGMEM comboER[] = {KC_E, KC_R, COMBO_END};
 const uint16_t PROGMEM comboUI[] = {KC_U, KC_I, COMBO_END};
 const uint16_t PROGMEM comboSD[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM comboXC[] = {KC_X, KC_C, COMBO_END};
 const uint16_t PROGMEM comboCD[] = {TH_COMM, TH_DOT, COMBO_END};
 const uint16_t PROGMEM comboWE[] = {KC_W, KC_E, COMBO_END};
-const uint16_t PROGMEM comboIO[] = {KC_I, KC_O, COMBO_END};
+const uint16_t PROGMEM comboIO[] = {KC_I, KC_O, COMBO_END}; // bad combo: easy to mistype when fast typing
 const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
 const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
 const uint16_t PROGMEM comboT1[] = {LT(_NAV, KC_BSPC), LT(_NAV, KC_SPACE), COMBO_END};
