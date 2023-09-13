@@ -205,6 +205,7 @@ enum custom_keycodes {
 #define BACK A(KC_LEFT)
 #define CTLSPACE C(KC_SPACE)
 #define ALTENTER A(KC_ENTER)
+#define PIPMODE S(C(KC_RBRC))
 
 // ide specific commands
 #define FINDANY S(C(KC_P)) // fuzzy search of anything
@@ -995,7 +996,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FUNC] = LAYOUT_5x6(
         _______,_______ ,_______ ,_______ ,_______ ,_______ ,       _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
         _______,XXXXXXX ,XXXXXXX ,BROWSE  ,BROWSEP ,M_BRWTB1,       KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
-        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,WINTAP  ,       WINTAP  ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
+        KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,AUTOFIX ,KC_MYCM ,       XXXXXXX ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
         _______,XXXXXXX ,DT_MOVE ,DT_CPYTO,SAVENOTE,PRINTSCR,       KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
                          _______ ,_______ ,                                           _______ ,_______ ,
                                            _______ ,_______ ,      _______ ,_______ ,
@@ -1113,6 +1114,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_ADJUST] = LAYOUT_5x6(
+        SETMAIN,_______,T_MODTAP,_______,TO(_QWERTY),TO(_GAME),     _______,_______,_______,_______,_______,KC_KB_POWER,
         _______,_______,QK_BOOT,_______,_______,_______,            _______,_______,_______,QK_BOOT,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
         _______,_______,_______,_______,_______,_______,            _______,_______,_______,_______,_______,_______,
@@ -1145,7 +1147,8 @@ const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM comboDF[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM comboCV[] = {KC_C, KC_V, COMBO_END};
 const uint16_t PROGMEM comboMC[] = {KC_M, TH_COMM, COMBO_END};
-const uint16_t PROGMEM comboUI[] = {KC_U, KC_I, COMBO_END};
+const uint16_t PROGMEM comboER[] = {KC_E, KC_R, COMBO_END}; // bad combo: easy to mistype when fast typing
+const uint16_t PROGMEM comboUI[] = {KC_U, KC_I, COMBO_END}; // bad combo: easy to mistype when fast typing
 const uint16_t PROGMEM comboSD[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM comboXC[] = {KC_X, KC_C, COMBO_END};
