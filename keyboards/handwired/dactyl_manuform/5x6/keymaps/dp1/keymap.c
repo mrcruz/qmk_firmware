@@ -627,7 +627,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             break;
     }
 
-    // special shifted number keys
+    // special shifted number
     #define process_shifted_keys(regular_key, shifted_key) if (shifted) { clear_shift;  tap_code16(shifted_key); restore_shift; } else { if (pressed) tap_code16(regular_key); } return false;
     switch (keycode) {
             case M_N1:
@@ -721,7 +721,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed){
                     clear_shift;
                     SEND_STRING(". ");
-                    restore_shift;
+                    add_oneshot_mods(MOD_BIT(KC_LSFT));
                 }
             }else{
                 process_tap_and_hold(SEND_STRING("."), SEND_STRING("!"));
