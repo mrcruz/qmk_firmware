@@ -1047,8 +1047,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_WIN] = LAYOUT_5x6(
     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
     _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                           XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______ ,
-    _______ ,XXXXXXX ,KC_MPRV ,MDSWI   ,KC_VOLU ,KC_MUTE ,                           KC_MUTE ,KC_VOLD ,MDSWI   ,KC_MPRV ,XXXXXXX ,_______ ,
-    _______ ,PIPMODE ,KC_MNXT ,KC_MPLY ,KC_VOLD ,KC_MSEL ,                           KC_MSEL ,KC_VOLU ,KC_MPLY ,KC_MNXT ,PIPMODE ,_______ ,
+    _______ ,XXXXXXX ,KC_MPRV ,MDSWI   ,KC_VOLU ,KC_MUTE ,                           KC_MUTE ,KC_VOLU ,MDSWI   ,KC_MPRV ,XXXXXXX ,_______ ,
+    _______ ,PIPMODE ,KC_MNXT ,KC_MPLY ,KC_VOLD ,KC_MSEL ,                           KC_MSEL ,KC_VOLD ,KC_MPLY ,KC_MNXT ,PIPMODE ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
                                                _______ ,_______ ,         _______ , _______ ,
