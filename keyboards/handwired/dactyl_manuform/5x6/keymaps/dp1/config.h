@@ -35,7 +35,7 @@
 #define LAYER_STATE_16BIT
 
 // combo
-#define COMBO_COUNT 13
+#define COMBO_COUNT 9
 
 // custom flags
 #define IGNORE_MOD_TAP_ON_ONESHOT
