@@ -293,7 +293,8 @@ enum custom_keycodes {
 #define SS_PASTE SS_LCTL(SS_TAP(X_V))
 #define SS_CUT SS_LCTL(SS_TAP(X_X))
 #define SS_GOAPP(kc) SS_LGUI(SS_LCTL(SS_TAP(kc)))
-#define SS_BACK SS_DELAY(20)  SS_TAP(X_LEFT)
+#define SS_BACK SS_DELAY(20) SS_TAP(X_LEFT)
+#define SS_ATPASTE SS_ALTTAB SS_DELAY(100) SS_PASTE SS_DELAY(20) SS_ALTTAB
 
 // helpers
 #define GET_ONESHOT_SHIFT get_oneshot_mods() & MOD_BIT(KC_LSFT)
@@ -339,7 +340,7 @@ void td_alttab_finished(tap_dance_state_t *state, void *user_data) {
             at_press_mouse = true;
             break;
         case TD_DOUBLE_TAP:
-            SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(80) SS_TAP(X_TAB) SS_DELAY(20) SS_UP(X_LALT));
+            SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(150) SS_TAP(X_TAB) SS_DELAY(20) SS_UP(X_LALT));
             break;
         case TD_DOUBLE_HOLD:
             SEND_STRING(SS_DOWN(X_LALT) SS_DOWN(X_LCTL) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(30) SS_UP(X_LALT) SS_UP(X_LCTL));
@@ -481,7 +482,7 @@ void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
         default:
-            layer_on(_RAISE);
+            layer_on(_FUNC);
             break;
     }
 }
@@ -493,7 +494,7 @@ void td_thmbr1n_reset(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
         default:
-            layer_off(_RAISE);
+            layer_off(_FUNC);
             break;
 
     }
@@ -676,20 +677,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 SEND_STRING(SS_COPY);
 
                 if (hold){
-                    SEND_STRING(SS_DELAY(10) SS_ALTTAB SS_DELAY(100));
-                    SEND_STRING(SS_PASTE SS_DELAY(10));
-                    SEND_STRING(SS_ALTTAB);
+                    SEND_STRING(SS_DELAY(10) SS_ATPASTE);
                 }
             }
             return false;
         case TH_CUT:
             if(pressed){
-                SEND_STRING(SS_CUT);
+                SEND_STRING(SS_CUT SS_DELAY(10));
 
                 if (hold){
-                    SEND_STRING(SS_DELAY(10) SS_ALTTAB SS_DELAY(100));
-                    SEND_STRING(SS_PASTE SS_DELAY(10));
-                    SEND_STRING(SS_ALTTAB);
+                    SEND_STRING(SS_DELAY(10) SS_ATPASTE);
                 }
             }
             return false;
