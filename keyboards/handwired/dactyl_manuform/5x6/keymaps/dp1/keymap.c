@@ -251,6 +251,7 @@ enum custom_keycodes {
 #define TH_APP LT(_HIGHQWERTY, KC_H)
 #define TH_COPY LT(_HIGHQWERTY, KC_I)
 #define TH_CUT LT(_HIGHQWERTY, KC_J)
+#define TH_UNDO LT(_HIGHQWERTY, KC_K)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
@@ -296,6 +297,7 @@ enum custom_keycodes {
 #define SS_GOAPP(kc) SS_LGUI(SS_LCTL(SS_TAP(kc)))
 #define SS_BACK SS_DELAY(20) SS_TAP(X_LEFT)
 #define SS_ATPASTE SS_ALTTAB SS_DELAY(100) SS_PASTE SS_DELAY(20) SS_ALTTAB
+#define SS_UNDO SS_LCTL(SS_TAP(X_Z)) SS_DELAY(20)
 
 // helpers
 #define GET_ONESHOT_SHIFT get_oneshot_mods() & MOD_BIT(KC_LSFT)
@@ -673,6 +675,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
+        case TH_UNDO:
+            process_tap_and_hold(tap_code16(UNDO), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
         case TH_COPY:
             if(pressed){
                 SEND_STRING(SS_COPY);
@@ -970,7 +974,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
     KC_ESC ,TH_LALT ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,QK_LOCK ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,UNDO    ,TH_CUT  ,TH_COPY ,PASTE   ,COMMENT ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
+   _______ ,COMMENT ,TH_CUT  ,TH_COPY ,PASTE   ,TH_UNDO    ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , TD_THUMBR ,
