@@ -173,6 +173,7 @@ enum custom_keycodes {
 #define OSM_ALT  OSM(MOD_LALT)
 #define OSM_CTRL OSM(MOD_LCTL)
 #define OSM_SHFT OSM(MOD_LSFT)
+#define OSM_GUI OSM(MOD_LGUI)
 
 // commands
 #define CLOSEAPP A(KC_F4)
@@ -667,11 +668,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_LABK:
             process_tap_and_hold(SEND_STRING("<>" SS_BACK), SEND_STRING(">"));
         case TH_DQT:
-            process_tap_and_hold(SEND_STRING("\"\"" SS_BACK), SEND_STRING("\""));
+            process_tap_and_hold(SEND_STRING("\"\"" SS_BACK), SEND_STRING("\" "));
         case TH_QUOT:
-            process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("'"));
+            process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
-            process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("`"));
+            process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
         case TH_COPY:
             if(pressed){
                 SEND_STRING(SS_COPY);
@@ -985,7 +986,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
     KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,SAVENOTE,KC_MYCM ,                           PRINTSCR,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,XXXXXXX ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
+   _______ ,OSM_GUI ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
