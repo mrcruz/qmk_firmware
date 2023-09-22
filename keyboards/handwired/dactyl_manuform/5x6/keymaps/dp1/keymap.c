@@ -35,6 +35,7 @@ REFERENCES
     https://geekhack.org/index.php?topic=51069.0
     https://getreuer.info/posts/keyboards/macros/index.html
     https://getreuer.info/posts/keyboards/triggers/index.html
+    https://github.com/andrewjrae/qmk-vim
     https://github.com/callum-oakley/qmk_firmware/tree/master/users/callum
     https://github.com/dschil138/Fulcrum
     https://github.com/getreuer/qmk-keymap/blob/main/README.md
@@ -54,7 +55,7 @@ REFERENCES
     https://www.keybr.com/
     https://www.reddit.com/r/olkb/comments/tnbvu3/planned_34_key_layout_to_reduce_rsi_pain_from/
     https://www.reddit.com/r/olkb/comments/y07cb8/new_multimode_use_for_caps_word/
-    nice simpler one shot layer with thumb shift and ctrl https://www.youtube.com/watch?v=8wZ8FRwOzhU
+    https://www.youtube.com/watch?v=8wZ8FRwOzhU nice simpler one shot layer with thumb shift and ctrl
 
 */
 
@@ -78,27 +79,21 @@ REFERENCES
 
 enum custom_keycodes {
     QWERTY = SAFE_RANGE,
-    ALT_TAB,
-    ALT_TABB,
     C_MACRO1,
     C_MACRO2,
     C_MACRO3,
     C_MACRO4,
     C_MACRO5,
-    DT_CPYTO, // copy + alttab + paste
-    DT_MOVE, // cut + alttab + paste
     AUTOFIX,
     SAVENOTE, // copy + go to my notes app + paste + alttab
     BROWSE, // new browser tab
     BROWSEP, // new private browser window
-    WINTAP, // just a tap in lgui, to search for stuff
     SETMAIN, // reset state of the keyboard
     UP10,
     DOWN10,
     LEFT10,
     RIGHT10,
     M_GOMA, // hit enter and go to main layer
-    M_MSEL, // mouse double click and ctrl c
     M_CIRC, // ^
     M_TILD, // ~
     M_DOTSLH, // ./
@@ -137,8 +132,6 @@ enum custom_keycodes {
     M_TSTDEB, // debug tests
     M_SELWORD, // select word
     M_BRWTB1, // browser tab 1
-    M_BRWTB2, // browser tab 2
-    M_BRWTB3, // browser tab 3
 };
 
 // mod taps
@@ -252,6 +245,7 @@ enum custom_keycodes {
 #define TH_COPY LT(_HIGHQWERTY, KC_I)
 #define TH_CUT LT(_HIGHQWERTY, KC_J)
 #define TH_UNDO LT(_HIGHQWERTY, KC_K)
+#define TH_WORD LT(_HIGHQWERTY, KC_L)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
@@ -267,6 +261,7 @@ enum custom_keycodes {
 #define TH_QUOT LT(_HIGHQWERTY, KC_QUOT)
 #define TH_GRV LT(_HIGHQWERTY, KC_GRV)
 #define TH_LALT LT(_HIGHQWERTY, KC_LALT)
+
 
 
 // toggles
@@ -677,6 +672,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
         case TH_UNDO:
             process_tap_and_hold(tap_code16(UNDO), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
+        case TH_WORD:
+            process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_LCTL(SS_LSFT(SS_TAP(X_RIGHT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
         case TH_COPY:
             if(pressed){
                 SEND_STRING(SS_COPY);
@@ -778,9 +775,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 layer_clear();
                 clear_keyboard();
                 return false;
-            case WINTAP:
-                SEND_STRING(SS_TAP(X_LGUI));
-                return false;
             case C_MACRO1:
                 SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_1) SS_UP(X_F17));
                 return false;
@@ -796,12 +790,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case C_MACRO5:
                 SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_5) SS_UP(X_F17));
                 return false;
-            case ALT_TAB:
-                SEND_STRING(SS_ALTTAB);
-                return false;
-            case ALT_TABB:
-                SEND_STRING(SS_DOWN(X_LALT) SS_DELAY(50) SS_TAP(X_TAB) SS_DELAY(50) SS_TAP(X_TAB) SS_UP(X_LALT));
-                return false;
             case BROWSE:
                 SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
                 SEND_STRING(SS_LCTL(SS_TAP(X_T)) SS_DELAY(100));
@@ -813,20 +801,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 SEND_STRING(SS_LCTL(SS_LSFT(SS_TAP(X_P))) SS_DELAY(300));
                 SEND_STRING(SS_PASTE SS_DELAY(10));
                 SEND_STRING(SS_LCTL(SS_TAP(X_A)));
-                return false;
-            case DT_CPYTO:
-                SEND_STRING(SS_COPY SS_DELAY(10));
-                SEND_STRING(SS_ALTTAB SS_DELAY(100));
-                SEND_STRING(SS_PASTE SS_DELAY(10));
-                // SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(10));
-                SEND_STRING(SS_ALTTAB);
-                return false;
-            case DT_MOVE:
-                SEND_STRING(SS_CUT SS_DELAY(10));
-                SEND_STRING(SS_ALTTAB SS_DELAY(100));
-                SEND_STRING(SS_PASTE SS_DELAY(10));
-                // SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(10));
-                SEND_STRING(SS_ALTTAB);
                 return false;
             case SAVENOTE:
                 SEND_STRING(SS_COPY SS_DELAY(10));
@@ -850,12 +824,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case RIGHT10:
                 SEND_STRING(SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT));
-                return false;
-            case M_MSEL:
-                SEND_STRING(SS_TAP(X_BTN1) SS_DELAY(5) SS_TAP(X_BTN1) SS_DELAY(5) SS_LCTL(SS_TAP(X_C)));
-                return false;
-            case M_SELWORD:
-                SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT) SS_LSFT(SS_TAP(X_LEFT))));
                 return false;
             case M_CIRC:
                 SEND_STRING("^ "); // ^
@@ -929,12 +897,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case M_BRWTB1:
                 SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_1)));
                 return false;
-            case M_BRWTB2:
-                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_2)));
-                return false;
-            case M_BRWTB3:
-                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_3)));
-                return false;
         }
     }
     return true;
@@ -970,11 +932,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                           C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,KC_TAB  ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,XXXXXXX ,_______ ,
+   _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,KC_TAB  ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
     KC_ESC ,TH_LALT ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,QK_LOCK ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,COMMENT ,TH_CUT  ,TH_COPY ,PASTE   ,TH_UNDO    ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
+   _______ ,COMMENT ,TH_CUT  ,TH_COPY ,PASTE   ,TH_UNDO ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , TD_THUMBR ,
@@ -1093,7 +1055,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_RAISE] = LAYOUT_5x6(
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,DT_MOVE ,DT_CPYTO,SAVENOTE,PRINTSCR,                           I_QUOT  ,_______ ,_______ ,_______ ,_______ ,_______ ,
+   _______ ,_______ ,_______ ,_______ ,SAVENOTE,PRINTSCR,                           I_QUOT  ,_______ ,_______ ,_______ ,_______ ,_______ ,
    _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           I_EXPLR ,_______ ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
