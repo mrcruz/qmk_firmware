@@ -803,11 +803,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 SEND_STRING(SS_LCTL(SS_TAP(X_A)));
                 return false;
             case SAVENOTE:
-                SEND_STRING(SS_COPY SS_DELAY(10));
-                SEND_STRING(SS_GOAPP(X_2) SS_DELAY(100));
-                SEND_STRING(SS_LALT(SS_TAP(X_1) SS_DELAY(100)));
-                SEND_STRING(SS_LCTL(SS_TAP(X_HOME) SS_DELAY(10) SS_TAP(X_V) SS_DELAY(10)));
-                SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(100));
+                SEND_STRING(SS_COPY SS_DELAY(20));
+                SEND_STRING(SS_GOAPP(X_2) SS_DELAY(150));
+                SEND_STRING(SS_LALT(SS_TAP(X_1)) SS_DELAY(150));
+                SEND_STRING(SS_LCTL(SS_TAP(X_HOME) SS_TAP(X_V)) SS_DELAY(20));
+                SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(20) SS_TAP(X_ENTER) SS_DELAY(20));
                 SEND_STRING(SS_ALTTAB);
                 return false;
             case AUTOFIX:
