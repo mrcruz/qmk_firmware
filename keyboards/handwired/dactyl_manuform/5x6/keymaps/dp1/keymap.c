@@ -980,11 +980,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,W_MIN   ,W_LEFT  ,W_SWTDSP,W_MAX   ,W_RIGHT ,                           W_RIGHT ,W_MAX   ,W_SWTDSP,W_LEFT  ,W_MIN   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_APP3 ,                           TH_APP3 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_APP1 ,                           TH_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_APP2 ,                           TH_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TH_APP1 ,                           TH_APP1 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
+   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TH_APP3 ,                           TH_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
