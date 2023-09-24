@@ -936,7 +936,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
     KC_ESC ,TH_LALT ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,QK_LOCK ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,COMMENT ,TH_CUT  ,TH_COPY ,PASTE   ,TH_UNDO ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
+   _______ ,COMMENT ,CUT     ,TH_COPY ,PASTE   ,TH_UNDO ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , TD_THUMBR ,
