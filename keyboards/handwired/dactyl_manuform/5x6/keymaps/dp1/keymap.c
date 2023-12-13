@@ -47,6 +47,7 @@ REFERENCES
     https://github.com/qmk/qmk_firmware/blob/master/keyboards/planck/keymaps/jeebak/keymap.c
     https://github.com/rafaelromao/keyboards
     https://github.com/Yowkees/keyball
+    https://golem.hu/board/
     https://imgur.com/gallery/l1xNsoO
     https://keymapdb.com/
     https://precondition.github.io/home-row-mods
@@ -68,7 +69,6 @@ REFERENCES
 #define _GAME 3
 #define _SYMBOLS 4
 #define _NAV 5
-#define _RAISE 6
 #define _NUMBER 7
 #define _FUNC 8
 #define _WIN 9
@@ -104,6 +104,7 @@ enum custom_keycodes {
     L_QUOV, // 'v
     // PORTUGUESE
     L_CEDI, // ç
+    L_CEAO, // çã
     L_ACIR, // â
     L_ATIL, // ã
     L_AGRA, // à
@@ -141,16 +142,15 @@ enum custom_keycodes {
 #define TS(kc) LSFT_T(kc)
 #define TW(kc) LGUI_T(kc)
 
+#define ALT_ESC TA(KC_ESC)
 #define CT_PGDN TC(KC_PGDN)
-#define SFT_NEXT TS(KC_F3)
-#define SFT_PGUP TS(KC_PGUP)
-#define WIN_PGUP LT(_WIN, KC_PGUP)
-#define WIN_NEXT LT(_WIN, KC_F3)
-#define ONE_TAB LT(_ONE, KC_TAB)
-#define ONE_ESC LT(_ONE, KC_ESC)
+#define GUI_TAB TW(KC_TAB)
 #define NAV_BSPC LT(_NAV, KC_BSPC)
 #define NAV_ENT LT(_NAV, KC_ENTER)
+#define NAV_ESC LT(_NAV, KC_ESC)
 #define NAV_SPC LT(_NAV, KC_SPACE)
+#define ONE_ESC LT(_ONE, KC_ESC)
+#define SFT_NEXT TS(KC_F3)
 
 // oneshots
 #define OS_ADJ  OSL(_ADJUST)
@@ -160,7 +160,6 @@ enum custom_keycodes {
 #define OS_NUM  OSL(_NUMBER)
 #define OS_ONE  OSL(_ONE)
 #define OS_QWER OSL(_HIGHQWERTY)
-#define OS_RAIS OSL(_RAISE)
 #define OS_SYM  OSL(_SYMBOLS)
 #define OS_WIN  OSL(_WIN)
 #define OSM_ALT  OSM(MOD_LALT)
@@ -203,13 +202,13 @@ enum custom_keycodes {
 #define GO_APP8 G(KC_8)
 #define GO_APP9 G(KC_9)
 
-#define MDSWI C(KC_SCRL) // software macro to switch audio output stream
 
 #define W_LEFT G(KC_LEFT)
 #define W_RIGHT G(KC_RIGHT)
 #define W_MAX G(KC_UP)
 #define W_MIN G(KC_DOWN)
 #define W_SWTDSP S(G(KC_LEFT)) // cycle window through displays
+#define W_MDSWI G(C(KC_V)) // windows 11 shortcut for switching audio
 #define W_DSKTPNEW C(G(KC_D))
 #define W_DSKTPCLOSE C(G(KC_F4))
 #define W_DSKTPLEFT C(G(KC_LEFT))
@@ -218,6 +217,7 @@ enum custom_keycodes {
 #define W_WINPASTE G(KC_V)
 #define W_LOCK G(KC_L)
 #define W_DSKTPSHOW G(KC_D)
+#define W_OAPPS G(KC_T) // cycle through open apps in windows taskbar
 #define CHANGEDISPLAY G(KC_P)
 
 // tap-hold macros
@@ -246,6 +246,7 @@ enum custom_keycodes {
 #define TH_CUT LT(_HIGHQWERTY, KC_J)
 #define TH_UNDO LT(_HIGHQWERTY, KC_K)
 #define TH_WORD LT(_HIGHQWERTY, KC_L)
+#define TH_OAPPS LT(_HIGHQWERTY, KC_M) // cycle through open apps in windows taskbar
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
@@ -285,13 +286,13 @@ enum custom_keycodes {
 #define TD_THUMBR TD(TDK_THMBR1N)
 
 // macros
-#define SS_ALTTAB SS_DOWN(X_LALT) SS_DELAY(10) SS_TAP(X_TAB) SS_DELAY(10) SS_UP(X_LALT)
+#define SS_ALTTAB SS_DOWN(X_LALT) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(20) SS_UP(X_LALT)
 #define SS_COPY SS_LCTL(SS_TAP(X_C))
 #define SS_PASTE SS_LCTL(SS_TAP(X_V))
 #define SS_CUT SS_LCTL(SS_TAP(X_X))
 #define SS_GOAPP(kc) SS_LGUI(SS_LCTL(SS_TAP(kc)))
 #define SS_BACK SS_DELAY(20) SS_TAP(X_LEFT)
-#define SS_ATPASTE SS_ALTTAB SS_DELAY(100) SS_PASTE SS_DELAY(20) SS_ALTTAB
+#define SS_ATPASTE SS_ALTTAB SS_DELAY(200) SS_PASTE SS_DELAY(50) SS_ALTTAB
 #define SS_UNDO SS_LCTL(SS_TAP(X_Z)) SS_DELAY(20)
 
 // helpers
@@ -334,7 +335,7 @@ void td_alttab_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             layer_on(_MNAV);
-            SEND_STRING(SS_DOWN(KX_MEYE));
+            SEND_STRING(SS_TAP(KX_MEYE));
             at_press_mouse = true;
             break;
         case TD_DOUBLE_TAP:
@@ -349,9 +350,7 @@ void td_alttab_finished(tap_dance_state_t *state, void *user_data) {
 }
 
 void alttab_reset(tap_dance_state_t *state, void *user_data) {
-    bool oneshotShifted = GET_ONESHOT_SHIFT;
-    bool regularShifted = GET_SHIFT;
-    bool shifted = oneshotShifted || regularShifted;
+    bool shifted = GET_ONESHOT_SHIFT || GET_SHIFT;
 
     switch (td_state_alttab) {
         case TD_DOUBLE_HOLD:
@@ -360,7 +359,10 @@ void alttab_reset(tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_HOLD:
             layer_off(_MNAV);
             SEND_STRING(SS_UP(KX_MEYE));
-            if(shifted == false && at_press_mouse) SEND_STRING(SS_TAP(X_BTN1));
+            if(shifted == false && at_press_mouse) {
+                SEND_STRING(SS_TAP(X_BTN1));
+                at_press_mouse = false;
+            }
             break;
         default:
             break;
@@ -403,15 +405,15 @@ void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
 
     uint8_t mod_state = get_mods();
     if (mod_state == 0) {
-        // when this TD is pressed we need to have at least one mod, since it does not make sense to use this TD wihout a mod.
+        // when this TD is pressed we need to have at least one mod, since it does not make sense to use this TD without a mod.
         mod_state = DEFAULT_ONESHOT_MOD;
     }
 
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
             // convert any mods to one shots
-            add_oneshot_mods(mod_state);
             set_oneshot_layer(_HIGHQWERTY, ONESHOT_START);
+            add_oneshot_mods(mod_state);
             break;
         case TD_SINGLE_HOLD:
             // add default mods
@@ -579,8 +581,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TABNEXT:
         case TABPREV:
         case TD_ATB:
-        case W_MIN:
-        case W_MAX:
+        case W_DOWN:
+        case W_UP:
         case W_SWTDSP:
         case W_LEFT:
         case W_RIGHT:
@@ -633,11 +635,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_SLSH:
             process_double_tap_on_hold(KC_SLSH);
         case TH_APP1:
-            process_tap_and_hold(tap_code16(GO_APP1), tap_code16(S(GO_APP1)));
+            if(pressed){
+                tap_code16(C(GO_APP1));
+            }
+            break;
         case TH_APP2:
-            process_tap_and_hold(tap_code16(GO_APP2), tap_code16(S(GO_APP2)));
+            if(pressed){
+                tap_code16(C(GO_APP2));
+            }
+            break;
         case TH_APP3:
-            process_tap_and_hold(tap_code16(GO_APP3), tap_code16(S(GO_APP3)));
+            if(pressed){
+                tap_code16(C(GO_APP3));
+            }
+            break;
         case TH_BACK:
             process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
         case TH_COLON:
@@ -674,6 +685,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(tap_code16(UNDO), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
         case TH_WORD:
             process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_LCTL(SS_LSFT(SS_TAP(X_RIGHT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
+        case TH_OAPPS:
+            if(pressed){
+                // macro to highlight the last opened app in the taskbar
+                SEND_STRING(SS_LGUI(SS_TAP(X_T)) SS_TAP(X_LEFT));
+            }
         case TH_COPY:
             if(pressed){
                 SEND_STRING(SS_COPY);
@@ -775,21 +791,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 layer_clear();
                 clear_keyboard();
                 return false;
-            case C_MACRO1:
-                SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_1) SS_UP(X_F17));
-                return false;
-            case C_MACRO2:
-                SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_2) SS_UP(X_F17));
-                return false;
-            case C_MACRO3:
-                SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_3) SS_UP(X_F17));
-                return false;
-            case C_MACRO4:
-                SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_4) SS_UP(X_F17));
-                return false;
-            case C_MACRO5:
-                SEND_STRING(SS_DOWN(X_F17) SS_TAP(X_5) SS_UP(X_F17));
-                return false;
             case BROWSE:
                 SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
                 SEND_STRING(SS_LCTL(SS_TAP(X_T)) SS_DELAY(100));
@@ -803,11 +804,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 SEND_STRING(SS_LCTL(SS_TAP(X_A)));
                 return false;
             case SAVENOTE:
-                SEND_STRING(SS_COPY SS_DELAY(20));
+                SEND_STRING(SS_COPY SS_DELAY(30));
                 SEND_STRING(SS_GOAPP(X_2) SS_DELAY(150));
                 SEND_STRING(SS_LALT(SS_TAP(X_1)) SS_DELAY(150));
-                SEND_STRING(SS_LCTL(SS_TAP(X_HOME) SS_TAP(X_V)) SS_DELAY(20));
-                SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(20) SS_TAP(X_ENTER) SS_DELAY(20));
+                SEND_STRING(SS_LCTL(SS_TAP(X_HOME) SS_TAP(X_V)) SS_DELAY(30));
+                SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(30) SS_TAP(X_ENTER) SS_DELAY(30));
                 SEND_STRING(SS_ALTTAB);
                 return false;
             case AUTOFIX:
@@ -848,6 +849,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case L_CEDI:
                 SEND_STRING(SS_RALT(SS_TAP(X_COMM))); // ç
+                return false;
+            case L_CEAO:
+                SEND_STRING(SS_RALT(SS_TAP(X_COMM)) "~a"); // çã
                 return false;
             case L_ACIR:
                 SEND_STRING("^a"); // â
@@ -910,7 +914,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   OS_ADJ  , M_N1   , M_N2   , M_N3   , M_N4   , M_N5   ,                            M_N6   , M_N7   , M_N8   , M_N9   , M_N0   ,W_LOCK  ,
+   OS_ADJ  ,DM_REC2 ,DM_REC1 ,DM_RSTP ,DM_PLY1 ,DM_PLY2 ,                           DM_PLY2 ,DM_PLY1 ,DM_RSTP ,DM_REC1 ,DM_REC2 ,W_LOCK  ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    KC_TAB  , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,KC_TAB  ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -919,24 +923,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    SETMAIN , KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   ,                            KC_N   , KC_M   ,TH_COMM , TH_DOT ,TH_SCLN ,SETMAIN ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      KC_WH_U ,KC_WH_D ,                                                               KC_WH_D , KC_WH_U,
-//                  └────────┴────────┘        ┌────────┬────────┐        ┌────────┬────────┐        └────────┴────────┘
                                                 NAV_BSPC,OSM_SHFT,         NAV_ENT ,NAV_SPC ,
-//                                             ├────────┼────────┤        ├────────┼────────┤
                                                 OS_ONE  ,TD_ALTAB,         TD_ALTAB, OS_ONE ,
-//                                             ├────────┼────────┤        ├────────┼────────┤
-                                                SETMAIN ,KC_BTN1 ,         KC_BTN1 ,SETMAIN
-//                                             └────────┴────────┘        └────────┴────────┘
+                                                KC_ESC  ,KC_BTN1 ,         KC_BTN1 , KC_ESC
    ),
 
     [_NAV] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   _______ ,C_MACRO5,C_MACRO4,C_MACRO3,C_MACRO2,C_MACRO1,                           C_MACRO1,C_MACRO2,C_MACRO3,C_MACRO4,C_MACRO5,_______ ,
+   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,KC_TAB  ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-    KC_ESC ,TH_LALT ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,QK_LOCK ,_______ ,
+   _______ ,ALT_ESC ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,KC_APP  ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,COMMENT ,CUT     ,TH_COPY ,PASTE   ,TH_UNDO ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_APP  ,_______ ,
+   _______ ,COMMENT ,CUT     ,TH_COPY ,PASTE   ,TH_UNDO ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_OAPPS,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , TD_THUMBR ,
@@ -950,7 +950,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,M_BRWTB1,I_EXPLR ,I_GTEST ,I_GOSCM ,I_QUOT  ,                           KC_CAPS ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-    KC_ESC ,OSM_ALT ,OSM_SHFT,OSM_CTRL,SAVENOTE,KC_MYCM ,                           PRINTSCR,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
+   _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,SAVENOTE,PRINTSCR,                           KC_MYCM ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,OSM_GUI ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
@@ -966,7 +966,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                           TH_AMPR ,TH_GRV  ,TH_LBRC ,KC_PERC ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-    KC_ESC ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,                           TH_PIPE ,TH_DQT  ,TH_LPRN ,KC_AT   ,_______ ,_______ ,
+   _______ ,TH_EXLM ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           TH_PIPE ,TH_DQT  ,TH_LPRN ,KC_AT   ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,M_DOTSLH,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,                           M_TILD  ,TH_QUOT ,TH_LCBR ,M_CIRC  ,_______ ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
@@ -982,7 +982,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_APP1 ,                           TH_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   KC_ESC  ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_APP2 ,                           TH_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_APP2 ,                           TH_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TH_APP3 ,                           TH_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
@@ -998,7 +998,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                           DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   KC_ESC  ,TH_EXLM ,TH_MINS ,TH_PLUS ,TH_EQL  ,KC_UNDS ,                           KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
+   _______ ,TH_EXLM ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,M_DOTSLH,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,                           KC_DEL  ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
@@ -1011,7 +1011,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_WIN] = LAYOUT_5x6(
     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
     _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                           XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______ ,
-    _______ ,XXXXXXX ,KC_MPRV ,MDSWI   ,KC_VOLU ,KC_MUTE ,                           KC_MUTE ,KC_VOLU ,MDSWI   ,KC_MPRV ,XXXXXXX ,_______ ,
+    _______ ,XXXXXXX ,KC_MPRV ,W_MDSWI ,KC_VOLU ,KC_MUTE ,                           KC_MUTE ,KC_VOLU ,W_MDSWI ,KC_MPRV ,XXXXXXX ,_______ ,
     _______ ,PIPMODE ,KC_MNXT ,KC_MPLY ,KC_VOLD ,KC_MSEL ,                           KC_MSEL ,KC_VOLD ,KC_MPLY ,KC_MNXT ,PIPMODE ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
@@ -1022,8 +1022,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_LANG] = LAYOUT_5x6(
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
    _______ ,L_ATIL  ,L_ACIR  ,L_EACU  ,_______ ,L_QUOT  ,                           _______ ,L_UACU  ,L_IACU  ,L_OACU  ,_______ ,_______ ,
-   _______ ,L_AACU  ,L_QUOS  ,L_ECIR  ,_______ ,_______ ,                           M_SCRT2 ,M_SCRT1 ,L_OCIR  ,L_OTIL  ,_______ ,_______ ,
-   _______ ,L_AGRA  ,_______ ,L_CEDI  ,L_QUOV  ,_______ ,                           L_QUOM  ,_______ ,_______ ,_______ ,_______ ,_______ ,
+   _______ ,L_AACU  ,L_QUOS  ,L_ECIR  ,_______ ,_______ ,                           M_SCRT2 ,M_SCRT1 ,L_OCIR  ,L_OTIL  ,AUTOFIX ,_______ ,
+   _______ ,L_AGRA  ,L_CEAO  ,L_CEDI  ,L_QUOV  ,_______ ,                           _______ ,L_QUOM  ,_______ ,_______ ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
                                                _______ ,_______ ,         _______ , _______ ,
@@ -1032,34 +1032,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_ONE] = LAYOUT_5x6(
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
    _______ ,_______ ,SET_NUM ,SET_FUN ,SET_NAV ,_______ ,                           _______ ,SET_NAV ,SET_FUN ,SET_NUM ,_______ ,_______ ,
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
                                                SETMAIN ,_______ ,         _______ , SETMAIN ,
-                                               _______ ,_______ ,         _______ , _______
-    ),
-
-    [_MODTAP] = LAYOUT_5x6(
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,TW(KC_A),TA(KC_S),TC(KC_D),TS(KC_F),_______ ,                           _______ ,TS(KC_J),TC(KC_K),TA(KC_L),_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-                     _______ ,_______ ,                                                               _______ ,_______ ,
-                                               _______ ,_______ ,         _______ , _______ ,
-                                               _______ ,_______ ,         _______ , _______ ,
-                                               _______ ,_______ ,         _______ , _______
-    ),
-
-    [_RAISE] = LAYOUT_5x6(
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,SAVENOTE,PRINTSCR,                           I_QUOT  ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           I_EXPLR ,_______ ,I_GTEST ,I_GOSCM ,_______ ,_______ ,
-                     _______ ,_______ ,                                                               _______ ,_______ ,
-                                               _______ ,_______ ,         _______ , _______ ,
-                                               _______ ,_______ ,         _______ , _______ ,
                                                _______ ,_______ ,         _______ , _______
     ),
 
@@ -1076,8 +1053,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_HIGHQWERTY] = LAYOUT_5x6(
    _______ , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   ,                            KC_6   , KC_7   , KC_8   , KC_9   , KC_0   ,_______ ,
-   KC_TAB  , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,_______ ,
-   KC_ESC  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   ,                            KC_H   , KC_J   , KC_K   , KC_L   , KC_QUOT,_______ ,
+   _______ , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,_______ ,
+   _______ , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   ,                            KC_H   , KC_J   , KC_K   , KC_L   , KC_QUOT,_______ ,
    _______ , KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   ,                            KC_N   , KC_M   ,KC_COMM , KC_DOT , KC_SLSH,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                KC_BSPC ,_______ ,         KC_ENT  , KC_SPACE,
@@ -1086,14 +1063,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_ADJUST] = LAYOUT_5x6(
-   SETMAIN ,_______ ,T_MODTAP,_______ ,TO(_QWERTY),TO(_GAME),                       _______ ,_______ ,_______ ,_______ ,_______ ,KC_PWR  ,
+   SETMAIN ,_______ ,_______ ,_______ ,TO(_QWERTY),TO(_GAME),                       _______ ,_______ ,_______ ,_______ ,_______ ,KC_PWR  ,
    _______ ,_______ ,QK_BOOT ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,QK_BOOT ,_______ ,_______ ,
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
-                                               _______ ,_______ ,            _______ ,_______ ,
-                                               _______ ,_______ ,         _______ , _______ ,
-                                               _______ ,_______ ,         _______ , _______
+                                               _______ ,_______ ,         _______ ,_______ ,
+                                               _______ ,_______ ,         _______ ,_______ ,
+                                               _______ ,_______ ,         _______ ,_______
     ),
 };
 
@@ -1134,10 +1111,9 @@ combo_t key_combos[COMBO_COUNT] = {
 //├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
     COMBO(comboSD, OS_FUNC),    COMBO(comboDF, OS_SYM),             COMBO(comboJK, OS_SYM),     COMBO(comboKL, OS_FUNC),
 //├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
-    COMBO(comboXC, OS_WIN),                                                                     COMBO(comboCD, OS_WIN),
+    COMBO(comboXC, OS_WIN),     COMBO(comboCV, KC_ESC),             COMBO(comboMC, KC_ESC),     COMBO(comboCD, OS_WIN),
 //└──────────────────────────┼──────────────────────────┘          └──────────────────────────┼──────────────────────────┘
 
     // other combos
-    COMBO(comboMM, SET_MNAV),
-    // COMBO(comboFJ, OS_ONE),
+    COMBO(comboMM, SET_MNAV)
 };

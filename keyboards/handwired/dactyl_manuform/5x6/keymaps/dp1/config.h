@@ -7,7 +7,7 @@
 //#define EE_HANDS
 
 // delay between key presses to improve RDP experience
-#define TAP_CODE_DELAY 1
+// #define TAP_CODE_DELAY 1
 
 // tap dance timer
 #define TAPPING_TERM 180
@@ -15,6 +15,10 @@
 
 // caps word
 #define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
+
+// macros
+#define DYNAMIC_MACRO_NO_NESTING
+#define DYNAMIC_MACRO_DELAY 40
 
 // mouse
 #undef MOUSEKEY_MAX_SPEED
@@ -26,16 +30,8 @@
 
 #define ONESHOT_TIMEOUT 2000
 
-// needed if we use link time optmization
-// https://thomasbaart.nl/2018/12/01/reducing-firmware-size-in-qmk/
-#define NO_ACTION_MACRO
-#define NO_ACTION_FUNCTIO
-
-// limit the layer size
-#define LAYER_STATE_16BIT
-
 // combo
-#define COMBO_COUNT 9
+#define COMBO_COUNT 11
 
 // custom flags
 #define IGNORE_MOD_TAP_ON_ONESHOT
