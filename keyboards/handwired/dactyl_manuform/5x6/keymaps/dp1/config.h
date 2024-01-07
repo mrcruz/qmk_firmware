@@ -18,7 +18,7 @@
 
 // macros
 #define DYNAMIC_MACRO_NO_NESTING
-#define DYNAMIC_MACRO_DELAY 40
+#define DYNAMIC_MACRO_DELAY 80
 
 // mouse
 #undef MOUSEKEY_MAX_SPEED

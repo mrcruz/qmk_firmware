@@ -64,7 +64,6 @@ REFERENCES
 #include "features/secrets.h"
 
 #define _QWERTY 0
-#define _MODTAP 1
 #define _LANG 2
 #define _GAME 3
 #define _SYMBOLS 4
@@ -79,11 +78,6 @@ REFERENCES
 
 enum custom_keycodes {
     QWERTY = SAFE_RANGE,
-    C_MACRO1,
-    C_MACRO2,
-    C_MACRO3,
-    C_MACRO4,
-    C_MACRO5,
     AUTOFIX,
     SAVENOTE, // copy + go to my notes app + paste + alttab
     BROWSE, // new browser tab
@@ -93,7 +87,6 @@ enum custom_keycodes {
     DOWN10,
     LEFT10,
     RIGHT10,
-    M_GOMA, // hit enter and go to main layer
     M_CIRC, // ^
     M_TILD, // ~
     M_DOTSLH, // ./
@@ -180,7 +173,6 @@ enum custom_keycodes {
 #define REDO S(C(KC_Z))
 #define TABNEXT C(KC_PGDN)
 #define TABPREV C(KC_PGUP)
-#define UNDO C(KC_Z)
 
 // ide specific commands
 #define I_BUILD S(C(KC_B)) // build
@@ -192,27 +184,15 @@ enum custom_keycodes {
 #define JUMPTOCOMMAND S(C(KC_P)) // fuzzy search of anything
 #define JUMPTOLINE C(KC_SCLN) // jump to line/column in my IDE setup
 
-#define GO_APP1 G(KC_1)
-#define GO_APP2 G(KC_2)
-#define GO_APP3 G(KC_3)
-#define GO_APP4 G(KC_4)
-#define GO_APP5 G(KC_5)
-#define GO_APP6 G(KC_6)
-#define GO_APP7 G(KC_7)
-#define GO_APP8 G(KC_8)
-#define GO_APP9 G(KC_9)
+#define GO_APP1 C(G(KC_1))
+#define GO_APP2 C(G(KC_2))
+#define GO_APP3 C(G(KC_3))
+#define GO_APP4 C(G(KC_4))
+#define GO_APP5 C(G(KC_5))
 
-
-#define W_LEFT G(KC_LEFT)
-#define W_RIGHT G(KC_RIGHT)
-#define W_MAX G(KC_UP)
-#define W_MIN G(KC_DOWN)
-#define W_SWTDSP S(G(KC_LEFT)) // cycle window through displays
 #define W_MDSWI G(C(KC_V)) // windows 11 shortcut for switching audio
 #define W_DSKTPNEW C(G(KC_D))
 #define W_DSKTPCLOSE C(G(KC_F4))
-#define W_DSKTPLEFT C(G(KC_LEFT))
-#define W_DSKTPRIGHT C(G(KC_RIGHT))
 #define W_DSKTPTAB G(KC_TAB)
 #define W_WINPASTE G(KC_V)
 #define W_LOCK G(KC_L)
@@ -225,9 +205,6 @@ enum custom_keycodes {
 // this is a trick to easily diferentiate between tap and hold, as explained here:
 // https://getreuer.info/posts/keyboards/triggers/index.html
 // TLDR: the layer and the keycode don't mean anything, they are used as identifiers only.
-#define TH_APP1 LT(_HIGHQWERTY, KC_1)
-#define TH_APP2 LT(_HIGHQWERTY, KC_2)
-#define TH_APP3 LT(_HIGHQWERTY, KC_3)
 #define TH_AMPR LT(_HIGHQWERTY, KC_5)
 #define TH_EXLM LT(_HIGHQWERTY, KC_6)
 #define TH_COLON LT(_HIGHQWERTY, KC_7)
@@ -241,17 +218,17 @@ enum custom_keycodes {
 #define TH_DQT LT(_HIGHQWERTY, KC_E)
 #define TH_JUMP LT(_HIGHQWERTY, KC_F)
 #define TH_BRWSR LT(_HIGHQWERTY, KC_G)
-#define TH_APP LT(_HIGHQWERTY, KC_H)
 #define TH_COPY LT(_HIGHQWERTY, KC_I)
 #define TH_CUT LT(_HIGHQWERTY, KC_J)
 #define TH_UNDO LT(_HIGHQWERTY, KC_K)
 #define TH_WORD LT(_HIGHQWERTY, KC_L)
 #define TH_OAPPS LT(_HIGHQWERTY, KC_M) // cycle through open apps in windows taskbar
+#define TH_BACK LT(_HIGHQWERTY, KC_N)
+#define TH_SWDSP LT(_HIGHQWERTY, KC_O)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
 #define TH_EQL LT(_HIGHQWERTY, KC_EQL)
-#define TH_BACK LT(_HIGHQWERTY, KC_LEFT)
 #define TH_HOME LT(_HIGHQWERTY, KC_HOME)
 #define TH_MINS LT(_HIGHQWERTY, KC_MINS)
 #define TH_PGUP LT(_HIGHQWERTY, KC_PGUP)
@@ -262,15 +239,16 @@ enum custom_keycodes {
 #define TH_QUOT LT(_HIGHQWERTY, KC_QUOT)
 #define TH_GRV LT(_HIGHQWERTY, KC_GRV)
 #define TH_LALT LT(_HIGHQWERTY, KC_LALT)
-
-
+#define TH_WUP LT(_HIGHQWERTY, KC_UP)
+#define TH_WDOWN LT(_HIGHQWERTY, KC_DOWN)
+#define TH_WLEFT LT(_HIGHQWERTY, KC_LEFT)
+#define TH_WRIGHT LT(_HIGHQWERTY, KC_RIGHT)
 
 // toggles
 #define SET_NAV TO(_NAV)
 #define SET_FUN TO(_FUNC)
 #define SET_NUM TO(_NUMBER)
 #define SET_MNAV TO(_MNAV)
-#define T_MODTAP TG(_MODTAP)
 
 // software defined macros.
 #define C_MACRO KC_F19
@@ -286,7 +264,7 @@ enum custom_keycodes {
 #define TD_THUMBR TD(TDK_THMBR1N)
 
 // macros
-#define SS_ALTTAB SS_DOWN(X_LALT) SS_DELAY(20) SS_TAP(X_TAB) SS_DELAY(20) SS_UP(X_LALT)
+#define SS_ALTTAB SS_LALT(SS_TAP(X_TAB))
 #define SS_COPY SS_LCTL(SS_TAP(X_C))
 #define SS_PASTE SS_LCTL(SS_TAP(X_V))
 #define SS_CUT SS_LCTL(SS_TAP(X_X))
@@ -521,21 +499,18 @@ tap_dance_action_t tap_dance_actions[] = {
 // tapping term per key
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case TD_ALTAB:
-            return 200;
-        case TH_END:
-        case TH_HOME:
-            return 250;
-        case TD_THUMBR:
-            return 220;
         case TD_1SHOT:
             return 170;
         case TD_ATB:
+        case TD_ALTAB:
             return 200;
-        case TH_APP1:
-        case TH_APP2:
-        case TH_APP3:
-            return 600;
+        case TD_THUMBR:
+            return 220;
+        case TH_END:
+        case TH_HOME:
+            return 250;
+        case TH_SWDSP:
+            return 800;
         default:
             return TAPPING_TERM;
     }
@@ -558,34 +533,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     // after some key presses, mostly keys in the _MNAV layer, we want to cancel the click on release of TDK_AT
     switch (keycode)
     {
-        case TD_CLICK:
-        case TH_CLIC2:
-        case TH_SELCT:
         case CLOSEAPP:
         case CLOSETAB:
-        case KC_BTN1:
-        case KC_BTN2:
-        case KC_BTN3:
         case GO_APP1:
         case GO_APP2:
         case GO_APP3:
         case GO_APP4:
         case GO_APP5:
-        case GO_APP6:
-        case GO_APP7:
-        case GO_APP8:
-        case GO_APP9:
-        case TH_APP1:
-        case TH_APP2:
-        case TH_APP3:
+        case KC_BTN1:
+        case KC_BTN2:
+        case KC_BTN3:
         case TABNEXT:
         case TABPREV:
         case TD_ATB:
-        case W_DOWN:
-        case W_UP:
-        case W_SWTDSP:
-        case W_LEFT:
-        case W_RIGHT:
+        case TD_CLICK:
+        case TH_CLIC2:
+        case TH_SELCT:
+        case TH_WDOWN:
+        case TH_WLEFT:
+        case TH_WRIGHT:
+        case TH_WUP:
+        case TH_SWDSP:
             at_press_mouse = false;
         default:
             break;
@@ -634,21 +602,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_double_tap_on_hold(KC_BSLS);
         case TH_SLSH:
             process_double_tap_on_hold(KC_SLSH);
-        case TH_APP1:
-            if(pressed){
-                tap_code16(C(GO_APP1));
-            }
-            break;
-        case TH_APP2:
-            if(pressed){
-                tap_code16(C(GO_APP2));
-            }
-            break;
-        case TH_APP3:
-            if(pressed){
-                tap_code16(C(GO_APP3));
-            }
-            break;
         case TH_BACK:
             process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
         case TH_COLON:
@@ -681,15 +634,39 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
+        case TH_WDOWN:
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_DOWN))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_DOWN))) SS_DELAY(200) SS_TAP(X_ESC)));
+        case TH_WUP:
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_UP))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_UP))) SS_DELAY(200) SS_TAP(X_ESC)));
+        case TH_WLEFT:
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_LEFT))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_LEFT))) SS_DELAY(200) SS_TAP(X_ESC)));
+        case TH_WRIGHT:
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_RIGHT))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(200) SS_TAP(X_ESC)));
         case TH_UNDO:
-            process_tap_and_hold(tap_code16(UNDO), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
+            process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_Z))), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
         case TH_WORD:
             process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_LCTL(SS_LSFT(SS_TAP(X_RIGHT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
+        case TH_SWDSP:
+            if(pressed){
+                // switch display
+                SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))));
+
+                if (hold){
+                    // and send to upper most slot
+                    SEND_STRING(SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_UP))));
+
+                    if(!shifted){
+                        SEND_STRING(SS_DELAY(200) SS_TAP(X_ESC));
+                    }
+                }
+            }
+            return false;
         case TH_OAPPS:
             if(pressed){
                 // macro to highlight the last opened app in the taskbar
                 SEND_STRING(SS_LGUI(SS_TAP(X_T)) SS_TAP(X_LEFT));
             }
+            return false;
         case TH_COPY:
             if(pressed){
                 SEND_STRING(SS_COPY);
@@ -886,10 +863,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case L_UACU:
                 SEND_STRING("'u"); // ú
                 return false;
-            case M_GOMA:
-                SEND_STRING(SS_TAP(X_ENTER));
-                layer_off(_NUMBER);
-                return false;
             case M_TSTRUN:
                 // SS_LSFT(SS_TAP(X_F5))
                 SEND_STRING(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_R)));
@@ -923,16 +896,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    SETMAIN , KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   ,                            KC_N   , KC_M   ,TH_COMM , TH_DOT ,TH_SCLN ,SETMAIN ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      KC_WH_U ,KC_WH_D ,                                                               KC_WH_D , KC_WH_U,
-                                                NAV_BSPC,OSM_SHFT,         NAV_ENT ,NAV_SPC ,
-                                                OS_ONE  ,TD_ALTAB,         TD_ALTAB, OS_ONE ,
-                                                KC_ESC  ,KC_BTN1 ,         KC_BTN1 , KC_ESC
+                                               NAV_BSPC,OSM_SHFT,          NAV_ENT , NAV_SPC ,
+                                               OS_ONE  ,TD_ALTAB,          TD_ALTAB, OS_ONE  ,
+                                               KC_ESC  ,KC_BTN1 ,          KC_BTN1 , KC_ESC
    ),
 
     [_NAV] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,KC_TAB  ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
+   _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,GUI_TAB ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,ALT_ESC ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,KC_APP  ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -978,13 +951,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_MNAV] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   _______ ,W_MIN   ,W_LEFT  ,W_SWTDSP,W_MAX   ,W_RIGHT ,                           W_RIGHT ,W_MAX   ,W_SWTDSP,W_LEFT  ,W_MIN   ,_______ ,
+   _______ ,TH_WDOWN,TH_WRIGHT,TH_WUP ,TH_WLEFT,TH_SWDSP,                           TH_SWDSP,TH_WLEFT,TH_WUP ,TH_WRIGHT,TH_WDOWN,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_APP1 ,                           TH_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP1 ,                           GO_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_APP2 ,                           TH_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                           GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TH_APP3 ,                           TH_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
+   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP3 ,                           GO_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
@@ -1031,8 +1004,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_ONE] = LAYOUT_5x6(
+   OS_ADJ  ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,OS_ADJ  ,
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,SET_NUM ,SET_FUN ,SET_NAV ,_______ ,                           _______ ,SET_NAV ,SET_FUN ,SET_NUM ,_______ ,_______ ,
+   _______ ,_______ ,SET_NUM ,SET_FUN ,SET_NAV ,SETMAIN ,                           SETMAIN ,SET_NAV ,SET_FUN ,SET_NUM ,_______ ,_______ ,
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
@@ -1100,7 +1074,6 @@ const uint16_t PROGMEM comboSD[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM comboXC[] = {KC_X, KC_C, COMBO_END};
 const uint16_t PROGMEM comboCD[] = {TH_COMM, TH_DOT, COMBO_END};
-const uint16_t PROGMEM comboWE[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
 const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
 
