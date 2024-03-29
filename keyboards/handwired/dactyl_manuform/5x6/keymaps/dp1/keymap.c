@@ -21,6 +21,7 @@ KNOW HOW
         *    letter 'p', the word 'pepper' would be quite frustating to type.
 
 HARDWARE
+    https://aposymbiont.github.io/split-keyboards/
     https://github.com/v0Ch/vfk-001/
     https://github.com/chenfucn/dactyl-pivot
     https://www.printables.com/model/102789-dactyl-flex-w-threaded-tenting
@@ -135,15 +136,19 @@ enum custom_keycodes {
 #define TS(kc) LSFT_T(kc)
 #define TW(kc) LGUI_T(kc)
 
+// home row
 #define ALT_ESC TA(KC_ESC)
 #define CT_PGDN TC(KC_PGDN)
+#define SFT_NEXT TS(KC_F3)
 #define GUI_TAB TW(KC_TAB)
+
+// thumbs
 #define NAV_BSPC LT(_NAV, KC_BSPC)
 #define NAV_ENT LT(_NAV, KC_ENTER)
-#define NAV_ESC LT(_NAV, KC_ESC)
 #define NAV_SPC LT(_NAV, KC_SPACE)
-#define ONE_ESC LT(_ONE, KC_ESC)
-#define SFT_NEXT TS(KC_F3)
+#define FUN_SPC LT(_FUNC, KC_SPACE)
+#define SYM_SPC LT(_SYMBOLS, KC_SPACE)
+#define NUM_SPC LT(_NUMBER, KC_SPACE)
 
 // oneshots
 #define OS_ADJ  OSL(_ADJUST)
@@ -238,7 +243,6 @@ enum custom_keycodes {
 #define TH_LCBR LT(_HIGHQWERTY, KC_LCBR)
 #define TH_QUOT LT(_HIGHQWERTY, KC_QUOT)
 #define TH_GRV LT(_HIGHQWERTY, KC_GRV)
-#define TH_LALT LT(_HIGHQWERTY, KC_LALT)
 #define TH_WUP LT(_HIGHQWERTY, KC_UP)
 #define TH_WDOWN LT(_HIGHQWERTY, KC_DOWN)
 #define TH_WLEFT LT(_HIGHQWERTY, KC_LEFT)
@@ -685,28 +689,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 }
             }
             return false;
-        case TH_LALT:
-            if (hold){
-                if(pressed){
-                    add_mods(MOD_BIT(KC_LALT));
-                }else{
-                    del_mods(MOD_BIT(KC_LALT));
-                }
-            }else{
-                if(pressed){
-                    set_oneshot_layer(_FUNC, ONESHOT_START);
-                }
-            }
-            return false;
-        case TH_APP:
-            if(pressed){
-                if (hold){
-                    tap_code16(KC_APP);
-                }else{
-                    SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_DELAY(5) SS_TAP(X_APP) SS_DELAY(200) SS_TAP(X_DOWN) SS_TAP(X_ENTER));
-                }
-            }
-            return false;
         case TH_BRWSR:
             if(pressed){
                 SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
@@ -782,7 +764,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case SAVENOTE:
                 SEND_STRING(SS_COPY SS_DELAY(30));
-                SEND_STRING(SS_GOAPP(X_2) SS_DELAY(150));
+                SEND_STRING(SS_GOAPP(X_2) SS_DELAY(300));
                 SEND_STRING(SS_LALT(SS_TAP(X_1)) SS_DELAY(150));
                 SEND_STRING(SS_LCTL(SS_TAP(X_HOME) SS_TAP(X_V)) SS_DELAY(30));
                 SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(30) SS_TAP(X_ENTER) SS_DELAY(30));
@@ -790,18 +772,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case AUTOFIX:
                 SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_DELAY(5) SS_TAP(X_APP) SS_DELAY(200) SS_TAP(X_DOWN) SS_TAP(X_ENTER));
-                return false;
-            case UP10:
-                SEND_STRING(SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP)SS_TAP(X_UP));
-                return false;
-            case DOWN10:
-                SEND_STRING(SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN)SS_TAP(X_DOWN));
-                return false;
-            case LEFT10:
-                SEND_STRING(SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT)SS_TAP(X_LEFT));
-                return false;
-            case RIGHT10:
-                SEND_STRING(SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT)SS_TAP(X_RIGHT));
                 return false;
             case M_CIRC:
                 SEND_STRING("^ "); // ^
@@ -887,23 +857,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   OS_ADJ  ,DM_REC2 ,DM_REC1 ,DM_RSTP ,DM_PLY1 ,DM_PLY2 ,                           DM_PLY2 ,DM_PLY1 ,DM_RSTP ,DM_REC1 ,DM_REC2 ,W_LOCK  ,
+   OS_ADJ  , M_N1   , M_N2   , M_N3   , M_N4   , M_N5   ,                            M_N6   , M_N7   , M_N8   , M_N9   , M_N0   ,W_LOCK  ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   KC_TAB  , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,KC_TAB  ,
+   _______ , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   KC_ESC  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   ,                            KC_H   , KC_J   , KC_K   , KC_L   ,OS_LANG ,KC_ESC  ,
+   _______ , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   ,                            KC_H   , KC_J   , KC_K   , KC_L   ,OS_LANG ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   SETMAIN , KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   ,                            KC_N   , KC_M   ,TH_COMM , TH_DOT ,TH_SCLN ,SETMAIN ,
+   _______ , KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   ,                            KC_N   , KC_M   ,TH_COMM , TH_DOT ,TH_SCLN ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      KC_WH_U ,KC_WH_D ,                                                               KC_WH_D , KC_WH_U,
-                                               NAV_BSPC,OSM_SHFT,          NAV_ENT , NAV_SPC ,
+                                               NAV_BSPC,OSM_SHFT,          NAV_ENT , NUM_SPC ,
                                                OS_ONE  ,TD_ALTAB,          TD_ALTAB, OS_ONE  ,
-                                               KC_ESC  ,KC_BTN1 ,          KC_BTN1 , KC_ESC
+                                               _______ ,_______ ,          _______ , _______
    ),
 
     [_NAV] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+   _______ ,DM_REC2 ,DM_REC1 ,DM_RSTP ,DM_PLY1 ,DM_PLY2 ,                           DM_PLY2 ,DM_PLY1 ,DM_RSTP ,DM_REC1 ,DM_REC2 ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,GUI_TAB ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -1075,7 +1045,6 @@ const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM comboXC[] = {KC_X, KC_C, COMBO_END};
 const uint16_t PROGMEM comboCD[] = {TH_COMM, TH_DOT, COMBO_END};
 const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
-const uint16_t PROGMEM comboFJ[] = {KC_F, KC_J, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
 
