@@ -121,11 +121,13 @@ enum custom_keycodes {
     M_N8,
     M_N9,
     M_N0,
-    M_SCRT1,
-    M_SCRT2,
+    M_SCRT1, // keyboard secret 1
+    M_SCRT2, // keyboard secret 2
+    M_CIRC, // ^
+    M_TILD, // ~
+    M_DOTSLH, // ./
     M_TSTRUN, // run tests
     M_TSTDEB, // debug tests
-    M_SELWORD, // select word
     M_BRWTB1, // browser tab 1
 };
 
@@ -139,8 +141,9 @@ enum custom_keycodes {
 // home row
 #define ALT_ESC TA(KC_ESC)
 #define CT_PGDN TC(KC_PGDN)
-#define SFT_NEXT TS(KC_F3)
+#define GUI_ESC TW(KC_ESC)
 #define GUI_TAB TW(KC_TAB)
+#define SFT_NEXT TS(KC_F3)
 
 // thumbs
 #define NAV_BSPC LT(_NAV, KC_BSPC)
@@ -217,7 +220,6 @@ enum custom_keycodes {
 #define TH_BSLS LT(_HIGHQWERTY, KC_9)
 #define TH_LPRN LT(_HIGHQWERTY, KC_0)
 #define TH_LBRC LT(_HIGHQWERTY, KC_A)
-#define TH_LABK LT(_HIGHQWERTY, KC_B)
 #define TH_CLIC2 LT(_HIGHQWERTY, KC_C)
 #define TH_SELCT LT(_HIGHQWERTY, KC_D)
 #define TH_DQT LT(_HIGHQWERTY, KC_E)
@@ -230,6 +232,7 @@ enum custom_keycodes {
 #define TH_OAPPS LT(_HIGHQWERTY, KC_M) // cycle through open apps in windows taskbar
 #define TH_BACK LT(_HIGHQWERTY, KC_N)
 #define TH_SWDSP LT(_HIGHQWERTY, KC_O)
+#define TH_ABK LT(_HIGHQWERTY, KC_P)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
@@ -385,7 +388,7 @@ static td_state_t td_state_oneshot;
 void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
     td_state_oneshot = cur_dance(state);
 
-    uint8_t mod_state = get_mods();
+    uint8_t mod_state = get_mods() & get_oneshot_mods();
     if (mod_state == 0) {
         // when this TD is pressed we need to have at least one mod, since it does not make sense to use this TD without a mod.
         mod_state = DEFAULT_ONESHOT_MOD;
@@ -667,8 +670,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             return false;
         case TH_OAPPS:
             if(pressed){
-                // macro to highlight the last opened app in the taskbar
-                SEND_STRING(SS_LGUI(SS_TAP(X_T)) SS_TAP(X_LEFT));
+                SEND_STRING(SS_LGUI(SS_TAP(X_T)) SS_TAP(X_LEFT)); // macro to highlight the last opened app in the taskbar
+                if (hold){
+                    SEND_STRING(SS_DELAY(100) SS_TAP(X_ENTER));
+                }
             }
             return false;
         case TH_COPY:
@@ -875,9 +880,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,DM_REC2 ,DM_REC1 ,DM_RSTP ,DM_PLY1 ,DM_PLY2 ,                           DM_PLY2 ,DM_PLY1 ,DM_RSTP ,DM_REC1 ,DM_REC2 ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,GUI_TAB ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
+   _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,KC_TAB  ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,ALT_ESC ,SFT_NEXT,CT_PGDN ,TD_1SHOT,OS_NUM  ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,KC_APP  ,_______ ,
+   _______ ,OSM_ALT ,SFT_NEXT,CT_PGDN ,TD_1SHOT,GUI_ESC ,                           KC_BSPC ,KC_LEFT ,KC_DOWN ,KC_RIGHT,KC_APP  ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,COMMENT ,CUT     ,TH_COPY ,PASTE   ,TH_UNDO ,                           KC_DEL  ,TD_ATB  ,TABPREV ,TABNEXT ,TH_OAPPS,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
@@ -895,7 +900,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,SAVENOTE,PRINTSCR,                           KC_MYCM ,KC_F5   ,KC_F6   ,KC_F7   ,KC_F8   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,OSM_GUI ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
+   _______ ,_______ ,I_STOP  ,M_TSTDEB,M_TSTRUN,I_BUILD ,                           KC_INS  ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
@@ -907,7 +912,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                           TH_AMPR ,TH_GRV  ,TH_LBRC ,KC_PERC ,_______ ,_______ ,
+   _______ ,KC_QUES ,KC_DLR  ,TH_ABK  ,KC_RABK ,KC_HASH ,                           TH_AMPR ,TH_GRV  ,TH_LBRC ,KC_PERC ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,TH_EXLM ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           TH_PIPE ,TH_DQT  ,TH_LPRN ,KC_AT   ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -939,7 +944,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,KC_QUES ,KC_DLR  ,KC_LABK ,KC_RABK ,KC_HASH ,                           DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
+   _______ ,KC_QUES ,KC_DLR  ,TH_ABK  ,KC_RABK ,KC_HASH ,                           DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,TH_EXLM ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
