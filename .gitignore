@@ -116,3 +116,6 @@ compile_commands.json
 # VIA(L) files that don't belong in QMK repo
 via*.json
 /keyboards/**/keymaps/vial/*
+
+# user defined ignores
+keyboards/handwired/dactyl_manuform/5x6/keymaps/dp1/features/secrets.h
