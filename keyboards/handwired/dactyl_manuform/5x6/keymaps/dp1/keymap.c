@@ -448,7 +448,6 @@ void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
         default:
-            layer_on(_FUNC);
             break;
     }
 }
@@ -460,7 +459,6 @@ void td_thmbr1n_reset(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
         default:
-            layer_off(_FUNC);
             break;
 
     }
