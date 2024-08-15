@@ -125,7 +125,6 @@ enum custom_keycodes {
 #define ALT_ESC TA(KC_ESC)
 #define CT_PGDN TC(KC_PGDN)
 #define GUI_ESC TW(KC_ESC)
-#define GUI_TAB TW(KC_TAB)
 #define SFT_NEXT TS(KC_F3)
 
 // thumbs
@@ -216,6 +215,9 @@ enum custom_keycodes {
 #define TH_BACK LT(_HIGHQWERTY, KC_N)
 #define TH_SWDSP LT(_HIGHQWERTY, KC_O)
 #define TH_ABK LT(_HIGHQWERTY, KC_P)
+#define TH_APP1 LT(_HIGHQWERTY, KC_Q)
+#define TH_APP2 LT(_HIGHQWERTY, KC_R)
+#define TH_APP3 LT(_HIGHQWERTY, KC_S)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
@@ -489,12 +491,18 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 170;
         case TD_ATB:
         case TD_ALTAB:
+        case TD_CLICK:
+        case TH_CLIC2:
             return 200;
         case TD_THUMBR:
             return 220;
         case TH_END:
         case TH_HOME:
             return 250;
+        case TH_APP1:
+        case TH_APP2:
+        case TH_APP3:
+            return 600;
         case TH_SWDSP:
             return 800;
         default:
@@ -526,6 +534,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case GO_APP3:
         case GO_APP4:
         case GO_APP5:
+        case TH_APP1:
+        case TH_APP2:
+        case TH_APP3:
         case KC_BTN1:
         case KC_BTN2:
         case KC_BTN3:
@@ -545,12 +556,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     #define process_tap_and_hold(actionOnTap, actionOnHold) if (pressed) hold ? actionOnHold : actionOnTap; return false;
     #define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode); return false;
     switch (keycode) {
-        case TH_MINS:
-            process_double_tap_on_hold(KC_MINS);
+
         case TH_EQL:
             process_double_tap_on_hold(KC_EQL);
-        case TH_PLUS:
-            process_double_tap_on_hold(KC_PLUS);
         case TH_AMPR:
             process_double_tap_on_hold(KC_AMPR);
         case TH_PIPE:
@@ -563,8 +571,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
         case TH_COLON:
             process_tap_and_hold(SEND_STRING(":"), SEND_STRING(":\\"));
-        case TH_EXLM:
-            process_tap_and_hold(SEND_STRING("!"), SEND_STRING("!="));
         case TH_HOME:
             process_tap_and_hold(tap_code16(KC_HOME), tap_code16(C(KC_HOME)));
         case TH_END:
@@ -591,6 +597,42 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
+        case TH_APP1:
+            // go to app 1 / send app to another screen and to the upper screen slot
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_1))), SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_UP)))) );
+        case TH_APP2:
+            // go to app 2 / send app to another screen
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_2))), SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT)))) );
+        case TH_APP3:
+            // go to app 3 / maximize app
+            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_3))), SEND_STRING(SS_LGUI(SS_TAP(X_UP))) );
+        case TH_MINS:
+            // - | ctrl
+            if (hold){
+                if (pressed) add_mods(MOD_MASK_CTRL);
+                else del_mods(MOD_MASK_CTRL);
+            }else{
+                if (pressed) SEND_STRING("-");
+            }
+            return false;
+        case TH_EXLM:
+            // ! | alt
+            if (hold){
+                if (pressed) add_mods(MOD_MASK_ALT);
+                else del_mods(MOD_MASK_ALT);
+            }else{
+                if (pressed) SEND_STRING("!");
+            }
+            return false;
+        case TH_PLUS:
+            // + | shift
+            if (hold){
+                if (pressed) add_mods(MOD_MASK_SHIFT);
+                else del_mods(MOD_MASK_SHIFT);
+            }else{
+                if (pressed) SEND_STRING("+");
+            }
+            return false;
         case TH_UNDO:
             process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_Z))), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
         case TH_WORD:
@@ -804,7 +846,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   OS_ADJ  , M_N1   , M_N2   , M_N3   , M_N4   , M_N5   ,                            M_N6   , M_N7   , M_N8   , M_N9   , M_N0   ,W_LOCK  ,
+   OS_ADJ  ,DM_REC2 ,DM_REC1 ,DM_RSTP ,DM_PLY1 ,DM_PLY2 ,                           DM_PLY2 ,DM_PLY1 ,DM_RSTP ,DM_REC1 ,DM_REC2 ,W_LOCK  ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -820,7 +862,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   _______ ,DM_REC2 ,DM_REC1 ,DM_RSTP ,DM_PLY1 ,DM_PLY2 ,                           DM_PLY2 ,DM_PLY1 ,DM_RSTP ,DM_REC1 ,DM_REC2 ,_______ ,
+   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,TH_JUMP ,TH_BRWSR,TH_PGUP ,TH_BACK ,KC_TAB  ,                           DELWORD ,TH_HOME ,KC_UP   ,TH_END  ,TH_WORD ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -943,7 +985,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_HIGHQWERTY] = LAYOUT_5x6(
-   _______ , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   ,                            KC_6   , KC_7   , KC_8   , KC_9   , KC_0   ,_______ ,
+   _______ , _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______,_______ ,
    _______ , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   ,                            KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   ,_______ ,
    _______ , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   ,                            KC_H   , KC_J   , KC_K   , KC_L   , KC_QUOT,_______ ,
    _______ , KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   ,                            KC_N   , KC_M   ,KC_COMM , KC_DOT , KC_SLSH,_______ ,
