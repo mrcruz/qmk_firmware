@@ -104,17 +104,6 @@ enum custom_keycodes {
     L_EACU, // é
     L_IACU, // í
     L_UACU, // ú
-    // num row on main layer
-    M_N1,
-    M_N2,
-    M_N3,
-    M_N4,
-    M_N5,
-    M_N6,
-    M_N7,
-    M_N8,
-    M_N9,
-    M_N0,
     M_SCRT1, // keyboard secret 1
     M_SCRT2, // keyboard secret 2
     M_CIRC, // ^
@@ -240,10 +229,6 @@ enum custom_keycodes {
 #define TH_LCBR LT(_HIGHQWERTY, KC_LCBR)
 #define TH_QUOT LT(_HIGHQWERTY, KC_QUOT)
 #define TH_GRV LT(_HIGHQWERTY, KC_GRV)
-#define TH_WUP LT(_HIGHQWERTY, KC_UP)
-#define TH_WDOWN LT(_HIGHQWERTY, KC_DOWN)
-#define TH_WLEFT LT(_HIGHQWERTY, KC_LEFT)
-#define TH_WRIGHT LT(_HIGHQWERTY, KC_RIGHT)
 
 // toggles
 #define SET_NAV TO(_NAV)
@@ -550,39 +535,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TD_CLICK:
         case TH_CLIC2:
         case TH_SELCT:
-        case TH_WDOWN:
-        case TH_WLEFT:
-        case TH_WRIGHT:
-        case TH_WUP:
         case TH_SWDSP:
             at_press_mouse = false;
         default:
             break;
-    }
-
-    // special shifted number
-    #define process_shifted_keys(regular_key, shifted_key) if (shifted) { clear_shift;  tap_code16(shifted_key); restore_shift; } else { if (pressed) tap_code16(regular_key); } return false;
-    switch (keycode) {
-            case M_N1:
-                process_shifted_keys(KC_1, KC_F1);
-            case M_N2:
-                process_shifted_keys(KC_2, KC_F2);
-            case M_N3:
-                process_shifted_keys(KC_3, KC_F3);
-            case M_N4:
-                process_shifted_keys(KC_4, KC_F4);
-            case M_N5:
-                process_shifted_keys(KC_5, KC_F5);
-            case M_N6:
-                process_shifted_keys(KC_6, KC_F6);
-            case M_N7:
-                process_shifted_keys(KC_7, KC_F7);
-            case M_N8:
-                process_shifted_keys(KC_8, KC_F8);
-            case M_N9:
-                process_shifted_keys(KC_9, KC_F9);
-            case M_N0:
-                process_shifted_keys(KC_0, KC_F10);
     }
 
     // tap-hold key macros
@@ -635,14 +591,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
-        case TH_WDOWN:
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_DOWN))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_DOWN))) SS_DELAY(200) SS_TAP(X_ESC)));
-        case TH_WUP:
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_UP))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_UP))) SS_DELAY(200) SS_TAP(X_ESC)));
-        case TH_WLEFT:
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_LEFT))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_LEFT))) SS_DELAY(200) SS_TAP(X_ESC)));
-        case TH_WRIGHT:
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_RIGHT))), SEND_STRING(SS_LALT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(200) SS_TAP(X_ESC)));
         case TH_UNDO:
             process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_Z))), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
         case TH_WORD:
