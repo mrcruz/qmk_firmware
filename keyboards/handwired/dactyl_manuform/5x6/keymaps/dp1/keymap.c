@@ -910,13 +910,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_MNAV] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-   _______ ,TH_WDOWN,TH_WRIGHT,TH_WUP ,TH_WLEFT,TH_SWDSP,                           TH_SWDSP,TH_WLEFT,TH_WUP ,TH_WRIGHT,TH_WDOWN,_______ ,
+   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP1 ,                           GO_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TH_APP1 ,                           TH_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                           GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_APP2 ,                           TH_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP3 ,                           GO_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
+   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TH_APP3 ,                           TH_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
