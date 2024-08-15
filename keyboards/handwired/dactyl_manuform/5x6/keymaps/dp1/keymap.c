@@ -944,7 +944,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
     _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                           XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______ ,
     _______ ,XXXXXXX ,KC_MPRV ,W_MDSWI ,KC_VOLU ,KC_MUTE ,                           KC_MUTE ,KC_VOLU ,W_MDSWI ,KC_MPRV ,XXXXXXX ,_______ ,
-    _______ ,PIPMODE ,KC_MNXT ,KC_MPLY ,KC_VOLD ,KC_MSEL ,                           KC_MSEL ,KC_VOLD ,KC_MPLY ,KC_MNXT ,PIPMODE ,_______ ,
+    _______ ,XXXXXXX ,KC_MNXT ,KC_MPLY ,KC_VOLD ,PIPMODE ,                           PIPMODE ,KC_VOLD ,KC_MPLY ,KC_MNXT ,XXXXXXX ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
                                                _______ ,_______ ,         _______ , _______ ,
