@@ -1041,8 +1041,8 @@ combo_t key_combos[COMBO_COUNT] = {
 //  bad: easy to mistype        bad: easy to mistype                 bad: easy to mistype       bad: easy to mistype
 //├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
     COMBO(comboSD, OS_FUNC),    COMBO(comboDF, OS_SYM),             COMBO(comboJK, OS_SYM),     COMBO(comboKL, OS_FUNC),
-//├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
-    COMBO(comboXC, OS_WIN),     COMBO(comboCV, KC_ESC),             COMBO(comboMC, KC_ESC),     COMBO(comboCD, OS_WIN),
+//├──────────────────────────├───────────[───────────────┤          ├──────────────────────────├──────────────────────────┤
+    COMBO(comboXC, OS_WIN),     COMBO(comboCV, OS_ONE),             COMBO(comboMC, OS_ONE),     COMBO(comboCD, OS_WIN),
 //└──────────────────────────┼──────────────────────────┘          └──────────────────────────┼──────────────────────────┘
 
     // other combos
