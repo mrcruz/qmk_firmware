@@ -68,8 +68,8 @@ REFERENCES
 #define _LANG 2
 #define _GAME 3
 #define _SYMBOLS 4
-#define _NAV 5
-#define _NUMBER 7
+#define _NUMBER 5
+#define _NAV 7
 #define _FUNC 8
 #define _WIN 9
 #define _MNAV 10
