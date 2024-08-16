@@ -215,9 +215,6 @@ enum custom_keycodes {
 #define TH_BACK LT(_HIGHQWERTY, KC_N)
 #define TH_SWDSP LT(_HIGHQWERTY, KC_O)
 #define TH_ABK LT(_HIGHQWERTY, KC_P)
-#define TH_APP1 LT(_HIGHQWERTY, KC_Q)
-#define TH_APP2 LT(_HIGHQWERTY, KC_R)
-#define TH_APP3 LT(_HIGHQWERTY, KC_S)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
 #define TH_END LT(_HIGHQWERTY, KC_END)
@@ -250,6 +247,9 @@ enum custom_keycodes {
 #define TD_1SHOT TD(TDK_1SHOT)
 #define TD_CLICK TD(TDK_CLICK)
 #define TD_THUMBR TD(TDK_THMBR1N)
+#define TD_APP1 TD(TDK_APP1)
+#define TD_APP2 TD(TDK_APP2)
+#define TD_APP3 TD(TDK_APP3)
 
 // macros
 #define SS_ALTTAB SS_LALT(SS_TAP(X_TAB))
@@ -395,6 +395,7 @@ void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
 }
 
 void td_oneshot_reset(tap_dance_state_t *state, void *user_data) {
+    td_state_oneshot = cur_dance(state);
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
             clear_oneshot_layer_state(ONESHOT_PRESSED);
@@ -452,15 +453,68 @@ void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void td_thmbr1n_reset(tap_dance_state_t *state, void *user_data) {
-    switch (td_state_thmbr1n) {
-        case TD_DOUBLE_TAP:
+static td_state_t td_state_goapp;
+void td_go_app1(tap_dance_state_t *state, void *user_data) {
+    td_state_goapp = cur_dance(state);
+    switch (td_state_goapp) {
         case TD_SINGLE_TAP:
+            SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_1))));
+            break;
+        case TD_DOUBLE_TAP:
+            SEND_STRING(SS_LGUI(SS_TAP(X_1) SS_DELAY(100) SS_TAP(X_1)));
             break;
         case TD_SINGLE_HOLD:
+            // send app to another screen and to the UPPER screen slot
+            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_UP))));
+            break;
+        case TD_DOUBLE_HOLD:
+            // send app to another screen and to the LOWER screen slot
+            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))));
+            break;
+        case TD_TRIPLE_HOLD:
+            // send app to another screen and to the MIDDLE screen slot
+            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))));
+            break;
         default:
             break;
+    }
+}
 
+void td_go_app2(tap_dance_state_t *state, void *user_data) {
+    td_state_goapp = cur_dance(state);
+    switch (td_state_goapp) {
+        case TD_SINGLE_TAP:
+            SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_2))));
+            break;
+        case TD_DOUBLE_TAP:
+            SEND_STRING(SS_LGUI(SS_TAP(X_2) SS_DELAY(100) SS_TAP(X_2)));
+            break;
+        case TD_SINGLE_HOLD:
+            // send app to another screen
+            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))));
+            break;
+        case TD_DOUBLE_HOLD:
+        default:
+            break;
+    }
+}
+
+void td_go_app3(tap_dance_state_t *state, void *user_data) {
+    td_state_goapp = cur_dance(state);
+    switch (td_state_goapp) {
+        case TD_SINGLE_TAP:
+            SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_3))));
+            break;
+        case TD_DOUBLE_TAP:
+            SEND_STRING(SS_LGUI(SS_TAP(X_3) SS_DELAY(100) SS_TAP(X_3)));
+            break;
+        case TD_SINGLE_HOLD:
+            // maximize app
+            SEND_STRING(SS_LGUI(SS_TAP(X_UP)));
+            break;
+        case TD_DOUBLE_HOLD:
+        default:
+            break;
     }
 }
 
@@ -471,6 +525,9 @@ enum tap_dance{
     TDK_1SHOT,
     TDK_CLICK,
     TDK_THMBR1N,
+    TDK_APP1,
+    TDK_APP2,
+    TDK_APP3,
 };
 
 // Tap Dance definitions
@@ -479,7 +536,10 @@ tap_dance_action_t tap_dance_actions[] = {
     [TDK_1SHOT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oneshot_finished, td_oneshot_reset),
     [TDK_AT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_alttab_finished, alttab_reset),
     [TDK_ATB] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_atb_finished, td_atb_reset),
-    [TDK_THMBR1N] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_thmbr1n_finished, td_thmbr1n_reset),
+    [TDK_THMBR1N] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_thmbr1n_finished, NULL),
+    [TDK_APP1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_go_app1, NULL),
+    [TDK_APP2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_go_app2, NULL),
+    [TDK_APP3] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_go_app3, NULL),
 };
 
 // tapping term per key
@@ -497,10 +557,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case TH_END:
         case TH_HOME:
             return 250;
-        case TH_APP1:
-        case TH_APP2:
-        case TH_APP3:
-            return 600;
+        case TD_APP1:
+        case TD_APP2:
+        case TD_APP3:
         case TH_SWDSP:
             return 800;
         default:
@@ -532,9 +591,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case GO_APP3:
         case GO_APP4:
         case GO_APP5:
-        case TH_APP1:
-        case TH_APP2:
-        case TH_APP3:
+        case TD_APP1:
+        case TD_APP2:
+        case TD_APP3:
         case KC_BTN1:
         case KC_BTN2:
         case KC_BTN3:
@@ -595,15 +654,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
-        case TH_APP1:
-            // go to app 1 / send app to another screen and to the upper screen slot
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_1))), SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_UP)))) );
-        case TH_APP2:
-            // go to app 2 / send app to another screen
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_2))), SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT)))) );
-        case TH_APP3:
-            // go to app 3 / maximize app
-            process_tap_and_hold(SEND_STRING(SS_LGUI(SS_TAP(X_3))), SEND_STRING(SS_LGUI(SS_TAP(X_UP))) );
         case TH_MINS:
             // - | ctrl
             if (hold){
@@ -836,7 +886,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     return true;
 }
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    // accessibility map
+    // accessibility map. a smaller number is more confortable
     //     11, 5 , 5 , 4 , 4 , 6 ,
     //     8 , 5 , 3 , 1 , 1 , 3 ,
     //     4 , 3 , 2 , 0 , 0 , 2 ,
@@ -910,11 +960,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,GO_APP1 ,                           GO_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
+   _______ ,CLOSEAPP,TH_CLIC2,KC_MS_U ,TD_CLICK,TD_APP1 ,                           TD_APP1 ,TD_CLICK,KC_MS_U ,TH_CLIC2,CLOSEAPP,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,GO_APP2 ,                           GO_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
+   _______ ,TH_SELCT,KC_MS_L ,KC_MS_D ,KC_MS_R ,TD_APP2 ,                           TD_APP2 ,KC_MS_L ,KC_MS_D ,KC_MS_R ,TH_SELCT,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,GO_APP3 ,                           GO_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
+   _______ ,CLOSETAB,TABPREV ,TABNEXT ,TD_ATB  ,TD_APP3 ,                           TD_APP3 ,TD_ATB  ,TABPREV ,TABNEXT ,CLOSETAB,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
