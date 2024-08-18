@@ -687,7 +687,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_UNDO:
             process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_Z))), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
         case TH_WORD:
-            process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_LCTL(SS_LSFT(SS_TAP(X_RIGHT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
+            process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT)) SS_LCTL(SS_LSFT(SS_TAP(X_LEFT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
         case TH_SWDSP:
             if(pressed){
                 // switch display
