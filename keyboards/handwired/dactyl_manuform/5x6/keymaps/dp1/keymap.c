@@ -363,11 +363,12 @@ void td_atb_reset(tap_dance_state_t *state, void *user_data) {
 
 #define DEFAULT_ONESHOT_MOD MOD_BIT(KC_LCTL)
 
+uint8_t mod_state;
 static td_state_t td_state_oneshot;
 void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
     td_state_oneshot = cur_dance(state);
 
-    uint8_t mod_state = get_mods() & get_oneshot_mods();
+    mod_state = get_mods() | get_oneshot_mods() | get_weak_mods();
     if (mod_state == 0) {
         // when this TD is pressed we need to have at least one mod, since it does not make sense to use this TD without a mod.
         mod_state = DEFAULT_ONESHOT_MOD;
@@ -375,14 +376,13 @@ void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
 
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
-            // convert any mods to one shots
             set_oneshot_layer(_HIGHQWERTY, ONESHOT_START);
-            add_oneshot_mods(mod_state);
+            // convert any mods to one shots
+            set_oneshot_mods(mod_state);
             break;
         case TD_SINGLE_HOLD:
-            // add default mods
             layer_on(_HIGHQWERTY);
-            add_mods(mod_state);
+            set_mods(mod_state);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_LCTL(SS_TAP(X_F)));
@@ -396,13 +396,6 @@ void td_oneshot_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
             clear_oneshot_layer_state(ONESHOT_PRESSED);
-            // clear_mods();
-            // clear_oneshot_mods();
-            // clear_keyboard_but_mods();
-            // add_oneshot_mods(mod_state);
-            // add_weak_mods(MOD_BIT(KC_LSFT));
-            // reset_oneshot_layer(). // cancel the oneshot
-            // reset_tap_dance(state);
             break;
         case TD_SINGLE_HOLD:
             layer_off(_HIGHQWERTY);
