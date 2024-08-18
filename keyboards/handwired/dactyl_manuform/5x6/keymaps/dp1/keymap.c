@@ -395,7 +395,6 @@ void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
 }
 
 void td_oneshot_reset(tap_dance_state_t *state, void *user_data) {
-    td_state_oneshot = cur_dance(state);
     switch (td_state_oneshot) {
         case TD_SINGLE_TAP:
             clear_oneshot_layer_state(ONESHOT_PRESSED);
@@ -456,25 +455,22 @@ void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
 static td_state_t td_state_goapp;
 void td_go_app1(tap_dance_state_t *state, void *user_data) {
     td_state_goapp = cur_dance(state);
+
     switch (td_state_goapp) {
         case TD_SINGLE_TAP:
             SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_1))));
             break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(SS_LGUI(SS_TAP(X_1) SS_DELAY(100) SS_TAP(X_1)));
-            break;
         case TD_SINGLE_HOLD:
             // send app to another screen and to the UPPER screen slot
             SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_UP))));
+            SEND_STRING(SS_DELAY(200) SS_TAP(X_ESC));
+            break;
+        case TD_DOUBLE_TAP:
+            SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_1) SS_DELAY(100) SS_TAP(X_1))));
             break;
         case TD_DOUBLE_HOLD:
-            // send app to another screen and to the LOWER screen slot
-            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))));
             break;
         case TD_TRIPLE_HOLD:
-            // send app to another screen and to the MIDDLE screen slot
-            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))));
-            break;
         default:
             break;
     }
@@ -486,14 +482,18 @@ void td_go_app2(tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_TAP:
             SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_2))));
             break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(SS_LGUI(SS_TAP(X_2) SS_DELAY(100) SS_TAP(X_2)));
-            break;
         case TD_SINGLE_HOLD:
             // send app to another screen
             SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))));
             break;
+        case TD_DOUBLE_TAP:
+            // maximize app
+            SEND_STRING(SS_LGUI(SS_TAP(X_UP)));
+            break;
         case TD_DOUBLE_HOLD:
+            // minimize app
+            SEND_STRING(SS_LGUI(SS_TAP(X_DOWN)));
+            break;
         default:
             break;
     }
@@ -505,14 +505,16 @@ void td_go_app3(tap_dance_state_t *state, void *user_data) {
         case TD_SINGLE_TAP:
             SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_3))));
             break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(SS_LGUI(SS_TAP(X_3) SS_DELAY(100) SS_TAP(X_3)));
-            break;
         case TD_SINGLE_HOLD:
-            // maximize app
-            SEND_STRING(SS_LGUI(SS_TAP(X_UP)));
+            // send app to another screen and to the LOWER screen slot
+            SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))) SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_DOWN))));
+            SEND_STRING(SS_DELAY(200) SS_TAP(X_ESC));
+            break;
+        case TD_DOUBLE_TAP:
+            SEND_STRING(SS_LGUI(SS_LCTL(SS_TAP(X_3) SS_DELAY(100) SS_TAP(X_3))));
             break;
         case TD_DOUBLE_HOLD:
+            break;
         default:
             break;
     }
@@ -560,6 +562,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case TD_APP1:
         case TD_APP2:
         case TD_APP3:
+            return 300;
         case TH_SWDSP:
             return 800;
         default:
