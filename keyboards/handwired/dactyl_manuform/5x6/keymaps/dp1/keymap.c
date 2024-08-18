@@ -868,7 +868,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     return true;
 }
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    // accessibility map. a smaller number is more confortable
+    // accessibility map for the left hand. a smaller number is more confortable
     //     11, 5 , 5 , 4 , 4 , 6 ,
     //     8 , 5 , 3 , 1 , 1 , 3 ,
     //     4 , 3 , 2 , 0 , 0 , 2 ,
