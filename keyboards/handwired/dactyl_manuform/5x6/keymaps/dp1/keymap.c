@@ -81,8 +81,6 @@ enum custom_keycodes {
     QWERTY = SAFE_RANGE,
     AUTOFIX,
     SAVENOTE, // copy + go to my notes app + paste + alttab
-    BROWSE, // new browser tab
-    BROWSEP, // new private browser window
     SETMAIN, // reset state of the keyboard
     CK_M1, // toggle mode 1
     // # ENGLISH
@@ -789,18 +787,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 // tap_code16(SH_OFF);
                 layer_clear();
                 clear_keyboard();
-                return false;
-            case BROWSE:
-                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
-                SEND_STRING(SS_LCTL(SS_TAP(X_T)) SS_DELAY(100));
-                SEND_STRING(SS_PASTE SS_DELAY(10));
-                SEND_STRING(SS_TAP(X_ENTER));
-                return false;
-            case BROWSEP:
-                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50));
-                SEND_STRING(SS_LCTL(SS_LSFT(SS_TAP(X_P))) SS_DELAY(300));
-                SEND_STRING(SS_PASTE SS_DELAY(10));
-                SEND_STRING(SS_LCTL(SS_TAP(X_A)));
                 return false;
             case SAVENOTE:
                 SEND_STRING(SS_COPY SS_DELAY(30));
