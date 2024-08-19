@@ -543,11 +543,10 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return 220;
         case TH_END:
         case TH_HOME:
-            return 250;
         case TD_APP1:
         case TD_APP2:
         case TD_APP3:
-            return 300;
+            return 250;
         case TH_SWDSP:
             return 800;
         default:
