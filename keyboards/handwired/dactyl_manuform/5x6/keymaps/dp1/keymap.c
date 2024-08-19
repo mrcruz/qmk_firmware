@@ -156,27 +156,21 @@ enum custom_keycodes {
 #define CUT C(KC_X)
 #define DELWORD C(KC_BSPC)
 #define PASTE C(KC_V)
-#define PIPMODE S(C(KC_RBRC))
 #define PRINTSCR SGUI(KC_S)
 #define REDO S(C(KC_Z))
 #define TABNEXT C(KC_PGDN)
 #define TABPREV C(KC_PGUP)
 
-// ide specific commands
+// user specific commands
 #define I_BUILD S(C(KC_B)) // build
 #define I_EXPLR A(KC_1) // RIDER: show explorer
 #define I_GOSCM A(KC_9) // RIDER: go to scm tab
 #define I_GTEST A(KC_8) // RIDER: go to tests tab
 #define I_QUOT C(KC_QUOTE) // used to cycle tabs / maximize and minimize tabs
-#define I_STOP  S(KC_F5) // stop debug/run
+#define I_STOP S(KC_F5) // stop debug/run
 #define JUMPTOCOMMAND S(C(KC_P)) // fuzzy search of anything
 #define JUMPTOLINE C(KC_SCLN) // jump to line/column in my IDE setup
-
-#define GO_APP1 C(G(KC_1))
-#define GO_APP2 C(G(KC_2))
-#define GO_APP3 C(G(KC_3))
-#define GO_APP4 C(G(KC_4))
-#define GO_APP5 C(G(KC_5))
+#define PIPMODE S(C(KC_RBRC)) // firefox: open video into a new window
 
 #define W_MDSWI G(C(KC_V)) // windows 11 shortcut for switching audio
 #define W_DSKTPNEW C(G(KC_D))
@@ -580,11 +574,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     {
         case CLOSEAPP:
         case CLOSETAB:
-        case GO_APP1:
-        case GO_APP2:
-        case GO_APP3:
-        case GO_APP4:
-        case GO_APP5:
         case TD_APP1:
         case TD_APP2:
         case TD_APP3:
