@@ -641,9 +641,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING("+");
             }
             return false;
-        case TH_SWDSP:
+        case TH_SWDSP: // switch display
             if(pressed){
-                // switch display
                 SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))));
 
                 if (hold){
@@ -656,9 +655,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 }
             }
             return false;
-        case TH_OAPPS:
+        case TH_OAPPS: // macro to highlight the last opened app in the taskbar
             if(pressed){
-                SEND_STRING(SS_LGUI(SS_TAP(X_T)) SS_TAP(X_LEFT)); // macro to highlight the last opened app in the taskbar
+                SEND_STRING(SS_LGUI(SS_TAP(X_T)) SS_TAP(X_LEFT));
                 if (hold){
                     SEND_STRING(SS_DELAY(100) SS_TAP(X_ENTER));
                 }
@@ -667,7 +666,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_COPY:
             if(pressed){
                 SEND_STRING(SS_COPY);
-
                 if (hold){
                     SEND_STRING(SS_DELAY(10) SS_ATPASTE);
                 }
@@ -676,7 +674,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_CUT:
             if(pressed){
                 SEND_STRING(SS_CUT SS_DELAY(10));
-
                 if (hold){
                     SEND_STRING(SS_DELAY(10) SS_ATPASTE);
                 }
@@ -764,8 +761,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case L_QUOS: send_string("' s") // 's
             case L_QUOV: send_string("' v") // 'v
             case L_QUOD: send_string("' d") // 'd
-            case L_CEDI: send_string(SS_RALT(SS_TAP(X_COMM))) // ç
-            case L_CEAO: send_string(SS_RALT(SS_TAP(X_COMM)) "~a") // çã
             case L_ACIR: send_string("^a") // â
             case L_ATIL: send_string("~a") // ã
             case L_AGRA: send_string("`a") // à
@@ -777,6 +772,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             case L_EACU: send_string("'e") // é
             case L_IACU: send_string("'i") // í
             case L_UACU: send_string("'u") // ú
+            case L_CEDI: send_string(SS_RALT(SS_TAP(X_COMM))) // ç
+            case L_CEAO: send_string(SS_RALT(SS_TAP(X_COMM)) "~a") // çã
         }
     }
 
