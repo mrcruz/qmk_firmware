@@ -88,6 +88,7 @@ enum custom_keycodes {
     L_QUOT, // 't
     L_QUOS, // 's
     L_QUOV, // 'v
+    L_QUOD, // 'd
     // PORTUGUESE
     L_CEDI, // ç
     L_CEAO, // çã
@@ -357,6 +358,7 @@ void td_atb_reset(tap_dance_state_t *state, void *user_data) {
 
 #define DEFAULT_ONESHOT_MOD MOD_BIT(KC_LCTL)
 
+// TD_1SHOT
 uint8_t mod_state;
 static td_state_t td_state_oneshot;
 void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
@@ -376,7 +378,7 @@ void td_oneshot_finished(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             layer_on(_HIGHQWERTY);
-            set_mods(mod_state);
+            add_mods(mod_state);
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_LCTL(SS_TAP(X_F)));
@@ -533,9 +535,9 @@ tap_dance_action_t tap_dance_actions[] = {
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case TD_1SHOT:
-            return 170;
         case TD_ATB:
         case TD_ALTAB:
+            return 170;
         case TD_CLICK:
         case TH_CLIC2:
             return 200;
@@ -636,8 +638,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
             process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
         case TH_GRV:
             process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
-        case TH_MINS:
-            // - | ctrl
+        case TH_MINS: // - | ctrl
             if (hold){
                 if (pressed) add_mods(MOD_MASK_CTRL);
                 else del_mods(MOD_MASK_CTRL);
@@ -645,8 +646,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING("-");
             }
             return false;
-        case TH_EXLM:
-            // ! | alt
+        case TH_EXLM: // ! | alt
             if (hold){
                 if (pressed) add_mods(MOD_MASK_ALT);
                 else del_mods(MOD_MASK_ALT);
@@ -654,8 +654,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING("!");
             }
             return false;
-        case TH_PLUS:
-            // + | shift
+        case TH_PLUS: // + | shift
             if (hold){
                 if (pressed) add_mods(MOD_MASK_SHIFT);
                 else del_mods(MOD_MASK_SHIFT);
@@ -752,7 +751,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 process_tap_and_hold(SEND_STRING("."), SEND_STRING("!"));
             }
             return false;
-
     }
 
     // special key macros
@@ -800,6 +798,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 return false;
             case L_QUOV:
                 SEND_STRING("' v"); // 'v
+                return false;
+            case L_QUOD:
+                SEND_STRING("' d"); // 'd
                 return false;
             case L_CEDI:
                 SEND_STRING(SS_RALT(SS_TAP(X_COMM))); // ç
@@ -972,7 +973,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_LANG] = LAYOUT_5x6(
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
    _______ ,L_ATIL  ,L_ACIR  ,L_EACU  ,_______ ,L_QUOT  ,                           _______ ,L_UACU  ,L_IACU  ,L_OACU  ,_______ ,_______ ,
-   _______ ,L_AACU  ,L_QUOS  ,L_ECIR  ,_______ ,_______ ,                           M_SCRT2 ,M_SCRT1 ,L_OCIR  ,L_OTIL  ,AUTOFIX ,_______ ,
+   _______ ,L_AACU  ,L_QUOS  ,L_ECIR  ,L_QUOD  ,_______ ,                           M_SCRT2 ,M_SCRT1 ,L_OCIR  ,L_OTIL  ,AUTOFIX ,_______ ,
    _______ ,L_AGRA  ,L_CEAO  ,L_CEDI  ,L_QUOV  ,_______ ,                           _______ ,L_QUOM  ,_______ ,_______ ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
@@ -982,9 +983,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_ONE] = LAYOUT_5x6(
    _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______,_______,TO(_GAME),TO(_QWERTY),_______,_______,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,SET_NAV ,SET_FUN ,SET_NUM ,_______ ,_______ ,
-   _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+   _______,TO(_GAME),TO(_QWERTY),_______,_______,_______,                           _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+   _______ ,OSM_ALT ,OSM_SHFT,OSM_CTRL,TD_1SHOT,_______ ,                           _______ ,SET_NAV ,SET_FUN ,SET_NUM ,_______ ,_______ ,
+   _______ ,_______ ,_______ ,_______ ,SETMAIN ,_______ ,                           _______ ,SETMAIN ,_______ ,_______ ,_______ ,_______ ,
                      _______ ,_______ ,                                                               _______ ,_______ ,
                                                _______ ,_______ ,         _______ , _______ ,
                                                SETMAIN ,_______ ,         _______ , SETMAIN ,
@@ -992,7 +993,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_GAME] = LAYOUT_5x6(
-   _______ , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   ,                            KC_6   , KC_7   , KC_8   , KC_9   , KC_0   ,_______ ,
+   _______ , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   ,                            KC_6   , KC_7   , KC_8   , KC_9   , KC_0   ,XXXXXXX ,
    KC_T    , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   ,                            KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   ,_______ ,
    KC_G    , KC_LCTL, KC_A   , KC_S   , KC_D   , KC_F   ,                            KC_G   , KC_H   , KC_J   , KC_K   , KC_L   ,_______ ,
    KC_B    , KC_LSFT, KC_Z   , KC_X   , KC_C   , KC_V   ,                            KC_B   , KC_N   , KC_M   ,KC_COMM , KC_DOT ,_______ ,
@@ -1043,24 +1044,46 @@ const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
 
 // ============ COMBOS
 
-const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
+// qwerty combos left
 const uint16_t PROGMEM comboDF[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM comboCV[] = {KC_C, KC_V, COMBO_END};
-const uint16_t PROGMEM comboMC[] = {KC_M, TH_COMM, COMBO_END};
-const uint16_t PROGMEM comboSD[] = {KC_S, KC_D, COMBO_END};
-const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM comboXC[] = {KC_X, KC_C, COMBO_END};
+const uint16_t PROGMEM comboSD[] = {KC_S, KC_D, COMBO_END};
+// qwerty combos right
+const uint16_t PROGMEM comboKL[] = {KC_K, KC_L, COMBO_END};
 const uint16_t PROGMEM comboCD[] = {TH_COMM, TH_DOT, COMBO_END};
+const uint16_t PROGMEM comboJK[] = {KC_J, KC_K, COMBO_END};
+const uint16_t PROGMEM comboMC[] = {KC_M, TH_COMM, COMBO_END};
+// _NAV layer combos left
+const uint16_t PROGMEM comboNCV[] = {TH_COPY, PASTE, COMBO_END};
+const uint16_t PROGMEM comboNXC[] = {CUT, TH_COPY, COMBO_END};
+// _NAV layer combos right
+const uint16_t PROGMEM comboNMC[] = {TD_ATB,TABPREV , COMBO_END};
+const uint16_t PROGMEM comboNCD[] = {TABPREV,TABNEXT , COMBO_END};
+
+// other combos
 const uint16_t PROGMEM comboMM[] = {KC_WH_U, KC_WH_D, COMBO_END};
+
+// Combo map Left
+//     x , x , x , x , x , x ,
+//     x , x , x , x , x , x ,
+//     x , x , 1 , 1 , 1 , x ,
+//     x , x , 1 , 1 , 1 , x ,
 
 combo_t key_combos[COMBO_COUNT] = {
 
+// _QWERTY layer combos
 //┌──────────────────────────┬──────────────────────────┐          ┌──────────────────────────┬──────────────────────────┐
-//  bad: easy to mistype        bad: easy to mistype                 bad: easy to mistype       bad: easy to mistype
-//├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
     COMBO(comboSD, OS_FUNC),    COMBO(comboDF, OS_SYM),             COMBO(comboJK, OS_SYM),     COMBO(comboKL, OS_FUNC),
-//├──────────────────────────├───────────[───────────────┤          ├──────────────────────────├──────────────────────────┤
+//├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
     COMBO(comboXC, OS_WIN),     COMBO(comboCV, OS_ONE),             COMBO(comboMC, OS_ONE),     COMBO(comboCD, OS_WIN),
+//└──────────────────────────┼──────────────────────────┘          └──────────────────────────┼──────────────────────────┘
+
+// _NAV layer combos
+//┌──────────────────────────┬──────────────────────────┐          ┌──────────────────────────┬──────────────────────────┐
+//      Bad: hold modifiers      Bad: hold modifiers                     Bad: Left + Down           Bad: Down + Right
+//├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
+    COMBO(comboNXC, OS_WIN),    COMBO(comboNCV, OS_ONE),            COMBO(comboNMC, OS_ONE),    COMBO(comboNCD, OS_WIN),
 //└──────────────────────────┼──────────────────────────┘          └──────────────────────────┼──────────────────────────┘
 
     // other combos

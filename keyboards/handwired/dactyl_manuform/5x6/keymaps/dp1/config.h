@@ -18,7 +18,7 @@
 
 // macros
 #define DYNAMIC_MACRO_NO_NESTING
-#define DYNAMIC_MACRO_DELAY 30
+#define DYNAMIC_MACRO_DELAY 80
 
 // mouse
 #undef MOUSEKEY_MAX_SPEED
@@ -31,7 +31,7 @@
 #define ONESHOT_TIMEOUT 2000
 
 // combo
-#define COMBO_COUNT 11
+#define COMBO_COUNT 16
 
 // custom flags
 #define IGNORE_MOD_TAP_ON_ONESHOT
