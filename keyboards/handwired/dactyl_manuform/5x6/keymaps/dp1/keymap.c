@@ -596,48 +596,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     // tap-hold key macros
     #define process_tap_and_hold(actionOnTap, actionOnHold) if (pressed) hold ? actionOnHold : actionOnTap; return false;
     #define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode); return false;
+    #define send_string(string) SEND_STRING(string); return false;
     switch (keycode) {
-
-        case TH_EQL:
-            process_double_tap_on_hold(KC_EQL);
-        case TH_AMPR:
-            process_double_tap_on_hold(KC_AMPR);
-        case TH_PIPE:
-            process_double_tap_on_hold(KC_PIPE);
-        case TH_BSLS:
-            process_double_tap_on_hold(KC_BSLS);
-        case TH_SLSH:
-            process_double_tap_on_hold(KC_SLSH);
-        case TH_BACK:
-            process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
-        case TH_COLON:
-            process_tap_and_hold(SEND_STRING(":"), SEND_STRING(":\\"));
-        case TH_HOME:
-            process_tap_and_hold(tap_code16(KC_HOME), tap_code16(C(KC_HOME)));
-        case TH_END:
-            process_tap_and_hold(tap_code16(KC_END), tap_code16(C(KC_END)));
-        case TH_CLIC2:
-            process_tap_and_hold(tap_code16(KC_BTN3), tap_code(KC_BTN2));
-        case TH_PGUP:
-            process_tap_and_hold(tap_code16(KC_PGUP), tap_code(KC_LGUI));
-        case TH_COMM:
-            process_tap_and_hold(SEND_STRING(","), SEND_STRING("?"));
-        case TH_SCLN:
-            process_tap_and_hold(SEND_STRING(";"), SEND_STRING("="));
-        case TH_LPRN:
-            process_tap_and_hold(SEND_STRING("()" SS_BACK), SEND_STRING(")"));
-        case TH_LCBR:
-            process_tap_and_hold(SEND_STRING("{}" SS_BACK), SEND_STRING("}"));
-        case TH_LBRC:
-            process_tap_and_hold(SEND_STRING("[]" SS_BACK), SEND_STRING("]"));
-        case TH_ABK:
-            process_tap_and_hold(SEND_STRING("<"), SEND_STRING("<>" SS_BACK));
-        case TH_DQT:
-            process_tap_and_hold(SEND_STRING("\"\"" SS_BACK), SEND_STRING("\" "));
-        case TH_QUOT:
-            process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
-        case TH_GRV:
-            process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
+        case TH_EQL: process_double_tap_on_hold(KC_EQL);
+        case TH_AMPR: process_double_tap_on_hold(KC_AMPR);
+        case TH_PIPE: process_double_tap_on_hold(KC_PIPE);
+        case TH_BSLS: process_double_tap_on_hold(KC_BSLS);
+        case TH_SLSH: process_double_tap_on_hold(KC_SLSH);
+        case TH_BACK: process_tap_and_hold(tap_code16(A(KC_LEFT)), tap_code16(A(KC_RIGHT)));
+        case TH_COLON: process_tap_and_hold(SEND_STRING(":"), SEND_STRING(":\\"));
+        case TH_HOME: process_tap_and_hold(tap_code16(KC_HOME), tap_code16(C(KC_HOME)));
+        case TH_END: process_tap_and_hold(tap_code16(KC_END), tap_code16(C(KC_END)));
+        case TH_CLIC2: process_tap_and_hold(tap_code16(KC_BTN3), tap_code(KC_BTN2));
+        case TH_PGUP: process_tap_and_hold(tap_code16(KC_PGUP), tap_code(KC_LGUI));
+        case TH_COMM: process_tap_and_hold(SEND_STRING(","), SEND_STRING("?"));
+        case TH_SCLN: process_tap_and_hold(SEND_STRING(";"), SEND_STRING("="));
+        case TH_LPRN: process_tap_and_hold(SEND_STRING("()" SS_BACK), SEND_STRING(")"));
+        case TH_LCBR: process_tap_and_hold(SEND_STRING("{}" SS_BACK), SEND_STRING("}"));
+        case TH_LBRC: process_tap_and_hold(SEND_STRING("[]" SS_BACK), SEND_STRING("]"));
+        case TH_ABK: process_tap_and_hold(SEND_STRING("<"), SEND_STRING("<>" SS_BACK));
+        case TH_DQT: process_tap_and_hold(SEND_STRING("\"\"" SS_BACK), SEND_STRING("\" "));
+        case TH_QUOT: process_tap_and_hold(SEND_STRING("''" SS_BACK), SEND_STRING("' "));
+        case TH_GRV: process_tap_and_hold(SEND_STRING("``" SS_BACK), SEND_STRING("` "));
+        case TH_UNDO: process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_Z))), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
+        case TH_WORD: process_tap_and_hold(SEND_STRING(SS_TAP(X_RIGHT) SS_LCTL(SS_TAP(X_LEFT)) SS_LCTL(SS_LSFT(SS_TAP(X_RIGHT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
         case TH_MINS: // - | ctrl
             if (hold){
                 if (pressed) add_mods(MOD_MASK_CTRL);
@@ -662,10 +644,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING("+");
             }
             return false;
-        case TH_UNDO:
-            process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_Z))), SEND_STRING(SS_UNDO SS_UNDO SS_UNDO SS_UNDO SS_UNDO));
-        case TH_WORD:
-            process_tap_and_hold(SEND_STRING(SS_LCTL(SS_TAP(X_RIGHT)) SS_LCTL(SS_LSFT(SS_TAP(X_LEFT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
         case TH_SWDSP:
             if(pressed){
                 // switch display
@@ -756,17 +734,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     // special key macros
     if (pressed) {
         switch (keycode) {
-            case M_SCRT1:
-                SEND_STRING(SECRET1);
+            case CK_M1:
+                // TODO create some kind of more complex logic here
+                // MODE1_ENABLED = true;
                 return false;
-            case M_SCRT2:
-                SEND_STRING(SECRET2);
-                return false;
-            case SETMAIN:
-                // tap_code16(SH_OFF);
-                layer_clear();
-                clear_keyboard();
-                return false;
+            case M_SCRT1: send_string(SECRET1)
+            case M_SCRT2: send_string(SECRET2)
+            case SETMAIN: layer_clear(); clear_keyboard(); return false;
+            case AUTOFIX: send_string(SS_LCTL(SS_TAP(X_LEFT)) SS_DELAY(5) SS_TAP(X_APP) SS_DELAY(200) SS_TAP(X_DOWN) SS_TAP(X_ENTER))
+            case M_CIRC: send_string("^ ") // ^
+            case M_TILD: send_string("~ ") // ~
+            case M_DOTSLH: send_string("./") // ./
+            case M_TSTRUN: send_string(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_R)))
+            case M_TSTDEB: send_string(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_D)))
+            case M_BRWTB1: send_string(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_1)))
             case SAVENOTE:
                 SEND_STRING(SS_COPY SS_DELAY(30));
                 SEND_STRING(SS_GOAPP(X_2) SS_DELAY(300));
@@ -775,85 +756,33 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 SEND_STRING(SS_TAP(X_ENTER) SS_DELAY(30) SS_TAP(X_ENTER) SS_DELAY(30));
                 SEND_STRING(SS_ALTTAB);
                 return false;
-            case AUTOFIX:
-                SEND_STRING(SS_LCTL(SS_TAP(X_LEFT)) SS_DELAY(5) SS_TAP(X_APP) SS_DELAY(200) SS_TAP(X_DOWN) SS_TAP(X_ENTER));
-                return false;
-            case M_CIRC:
-                SEND_STRING("^ "); // ^
-                return false;
-            case M_TILD:
-                SEND_STRING("~ "); // ~
-                return false;
-            case M_DOTSLH:
-                SEND_STRING("./"); // ./
-                return false;
-            case L_QUOM:
-                SEND_STRING("' m"); // 'm
-                return false;
-            case L_QUOT:
-                SEND_STRING("' t"); // 't
-                return false;
-            case L_QUOS:
-                SEND_STRING("' s"); // 's
-                return false;
-            case L_QUOV:
-                SEND_STRING("' v"); // 'v
-                return false;
-            case L_QUOD:
-                SEND_STRING("' d"); // 'd
-                return false;
-            case L_CEDI:
-                SEND_STRING(SS_RALT(SS_TAP(X_COMM))); // ç
-                return false;
-            case L_CEAO:
-                SEND_STRING(SS_RALT(SS_TAP(X_COMM)) "~a"); // çã
-                return false;
-            case L_ACIR:
-                SEND_STRING("^a"); // â
-                return false;
-            case L_ATIL:
-                SEND_STRING("~a"); // ã
-                return false;
-            case L_AGRA:
-                SEND_STRING("`a"); // à
-                return false;
-            case L_AACU:
-                SEND_STRING("'a"); // á
-                return false;
-            case L_OTIL:
-                SEND_STRING("~o"); // õ
-                return false;
-            case L_OCIR:
-                SEND_STRING("^o"); // ô
-                return false;
-            case L_OACU:
-                SEND_STRING("'o"); // ó
-                return false;
-            case L_ECIR:
-                SEND_STRING("^e"); // ê
-                return false;
-            case L_EACU:
-                SEND_STRING("'e"); // é
-                return false;
-            case L_IACU:
-                SEND_STRING("'i"); // í
-                return false;
-            case L_UACU:
-                SEND_STRING("'u"); // ú
-                return false;
-            case M_TSTRUN:
-                // SS_LSFT(SS_TAP(X_F5))
-                SEND_STRING(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_R)));
-                return false;
-            case M_TSTDEB:
-                // SS_LSFT(SS_TAP(X_F5))
-                SEND_STRING(SS_LALT(SS_TAP(X_8)) SS_LCTL(SS_TAP(X_T)) SS_LCTL(SS_TAP(X_D)));
-                return false;
-            case M_BRWTB1:
-                SEND_STRING(SS_GOAPP(X_1) SS_DELAY(50) SS_LCTL(SS_TAP(X_1)));
-                return false;
         }
     }
+
+    // language macros
+    if (pressed) {
+        switch (keycode) {
+            case L_QUOM: send_string("' m") // 'm
+            case L_QUOT: send_string("' t") // 't
+            case L_QUOS: send_string("' s") // 's
+            case L_QUOV: send_string("' v") // 'v
+            case L_QUOD: send_string("' d") // 'd
+            case L_CEDI: send_string(SS_RALT(SS_TAP(X_COMM))) // ç
+            case L_CEAO: send_string(SS_RALT(SS_TAP(X_COMM)) "~a") // çã
+            case L_ACIR: send_string("^a") // â
+            case L_ATIL: send_string("~a") // ã
+            case L_AGRA: send_string("`a") // à
+            case L_AACU: send_string("'a") // á
+            case L_OTIL: send_string("~o") // õ
+            case L_OCIR: send_string("^o") // ô
+            case L_OACU: send_string("'o") // ó
+            case L_ECIR: send_string("^e") // ê
+            case L_EACU: send_string("'e") // é
+            case L_IACU: send_string("'i") // í
+            case L_UACU: send_string("'u") // ú
+        }
+    }
+
     return true;
 }
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
