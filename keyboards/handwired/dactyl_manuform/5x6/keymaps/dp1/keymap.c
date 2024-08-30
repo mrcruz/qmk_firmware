@@ -557,14 +557,14 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 }
 
 #define clear_shift del_mods(MOD_BIT(KC_LSFT)); del_oneshot_mods(MOD_BIT(KC_LSFT));
-#define restore_shift if (regularShifted) add_mods(MOD_BIT(KC_LSFT));
+#define restore_shift if (GET_SHIFT) add_mods(MOD_BIT(KC_LSFT));
+#define process_tap_and_hold(actionOnTap, actionOnHold) if (pressed) hold ? actionOnHold : actionOnTap; return false;
+#define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode); return false;
+#define send_string(string) SEND_STRING(string); return false;
 
-// process macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
-    bool oneshotShifted = GET_ONESHOT_SHIFT;
-    bool regularShifted = GET_SHIFT;
-    bool shifted = oneshotShifted || regularShifted;
+    bool shifted = GET_ONESHOT_SHIFT || GET_SHIFT;
 
     // getting information to differentiate between presses and holds
     bool pressed = record->event.pressed;
@@ -594,9 +594,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     }
 
     // tap-hold key macros
-    #define process_tap_and_hold(actionOnTap, actionOnHold) if (pressed) hold ? actionOnHold : actionOnTap; return false;
-    #define process_double_tap_on_hold(keycode) if (pressed && hold) tap_code16(keycode); if (pressed) tap_code16(keycode); return false;
-    #define send_string(string) SEND_STRING(string); return false;
     switch (keycode) {
         case TH_EQL: process_double_tap_on_hold(KC_EQL);
         case TH_AMPR: process_double_tap_on_hold(KC_AMPR);
