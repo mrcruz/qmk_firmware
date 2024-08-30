@@ -1,5 +1,4 @@
 /*
-
 TODO:
     KC_REPEAT
 
@@ -189,7 +188,7 @@ enum custom_keycodes {
 // https://getreuer.info/posts/keyboards/triggers/index.html
 // TLDR: the layer and the keycode don't mean anything, they are used as identifiers only.
 #define TH_AMPR LT(_HIGHQWERTY, KC_5)
-#define TH_EXLM LT(_HIGHQWERTY, KC_6)
+#define TH_NOT LT(_HIGHQWERTY, KC_6)
 #define TH_COLON LT(_HIGHQWERTY, KC_7)
 #define TH_PLUS LT(_HIGHQWERTY, KC_8)
 #define TH_BSLS LT(_HIGHQWERTY, KC_9)
@@ -625,12 +624,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
                 if (pressed) SEND_STRING("-");
             }
             return false;
-        case TH_EXLM: // ! | alt
+        case TH_NOT: // != | alt
             if (hold){
                 if (pressed) add_mods(MOD_MASK_ALT);
                 else del_mods(MOD_MASK_ALT);
             }else{
-                if (pressed) SEND_STRING("!");
+                if (pressed) SEND_STRING("!=");
             }
             return false;
         case TH_PLUS: // + | shift
@@ -840,7 +839,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,KC_QUES ,KC_DLR  ,TH_ABK  ,KC_RABK ,KC_HASH ,                           TH_AMPR ,TH_GRV  ,TH_LBRC ,KC_PERC ,KC_COMM ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_EXLM ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           TH_PIPE ,TH_DQT  ,TH_LPRN ,KC_AT   ,_______ ,_______ ,
+   _______ ,TH_NOT  ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           TH_PIPE ,TH_DQT  ,TH_LPRN ,KC_AT   ,_______ ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,M_DOTSLH,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,                           M_TILD  ,TH_QUOT ,TH_LCBR ,M_CIRC  ,KC_DOT  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
@@ -872,7 +871,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,KC_QUES ,KC_DLR  ,TH_ABK  ,KC_RABK ,KC_HASH ,                           DELWORD ,KC_7    ,KC_8    ,KC_9    ,KC_COMM ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-   _______ ,TH_EXLM ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
+   _______ ,TH_NOT  ,TH_PLUS ,TH_MINS ,TH_EQL  ,KC_UNDS ,                           KC_BSPC ,KC_4    ,KC_5    ,KC_6    ,KC_0    ,_______ ,
 //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
    _______ ,M_DOTSLH,KC_ASTR ,TH_SLSH ,TH_BSLS ,TH_COLON,                           KC_DEL  ,KC_1    ,KC_2    ,KC_3    ,KC_DOT  ,_______ ,
 //└────────┴────────┼────────┼────────┼────────┼────────┘                          └────────┴────────┼────────┼────────┼────────┼────────┘
