@@ -205,7 +205,6 @@ enum custom_keycodes {
 #define TH_WORD LT(_HIGHQWERTY, KC_L)
 #define TH_OAPPS LT(_HIGHQWERTY, KC_M) // cycle through open apps in windows taskbar
 #define TH_BACK LT(_HIGHQWERTY, KC_N)
-#define TH_SWDSP LT(_HIGHQWERTY, KC_O)
 #define TH_ABK LT(_HIGHQWERTY, KC_P)
 #define TH_COMM LT(_HIGHQWERTY, KC_COMM)
 #define TH_DOT LT(_HIGHQWERTY, KC_DOT)
@@ -283,6 +282,7 @@ td_state_t cur_dance(tap_dance_state_t *state) {
     else return TD_UNKNOWN;
 }
 
+// TD_ALTAB
 static td_state_t td_state_alttab;
 static bool at_press_mouse;
 void td_alttab_finished(tap_dance_state_t *state, void *user_data) {
@@ -316,17 +316,17 @@ void alttab_reset(tap_dance_state_t *state, void *user_data) {
             break;
         case TD_SINGLE_HOLD:
             layer_off(_MNAV);
-            SEND_STRING(SS_UP(KX_MEYE));
             if(shifted == false && at_press_mouse) {
                 SEND_STRING(SS_TAP(X_BTN1));
-                at_press_mouse = false;
             }
+            at_press_mouse = false;
             break;
         default:
             break;
     }
 }
 
+// TD_ATB
 static td_state_t td_state_atb;
 void td_atb_finished(tap_dance_state_t *state, void *user_data) {
     td_state_atb = cur_dance(state);
@@ -410,7 +410,7 @@ void td_click_finished(tap_dance_state_t *state, void *user_data) {
     td_state_click = cur_dance(state);
     switch (td_state_click) {
         case TD_SINGLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(800) SS_TAP(X_P)); // open link in a new private window
+            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(600) SS_TAP(X_P)); // open link in a new private window
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_DOWN(X_BTN1)); // hold mouse button 1 until it is pressed again
@@ -439,6 +439,7 @@ void td_thmbr1n_finished(tap_dance_state_t *state, void *user_data) {
 }
 
 static td_state_t td_state_goapp;
+// TD_APP1
 void td_go_app1(tap_dance_state_t *state, void *user_data) {
     td_state_goapp = cur_dance(state);
 
@@ -462,6 +463,7 @@ void td_go_app1(tap_dance_state_t *state, void *user_data) {
     }
 }
 
+// TD_APP2
 void td_go_app2(tap_dance_state_t *state, void *user_data) {
     td_state_goapp = cur_dance(state);
     switch (td_state_goapp) {
@@ -485,6 +487,7 @@ void td_go_app2(tap_dance_state_t *state, void *user_data) {
     }
 }
 
+// TD_APP3
 void td_go_app3(tap_dance_state_t *state, void *user_data) {
     td_state_goapp = cur_dance(state);
     switch (td_state_goapp) {
@@ -548,8 +551,6 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case TD_APP2:
         case TD_APP3:
             return 250;
-        case TH_SWDSP:
-            return 800;
         default:
             return TAPPING_TERM;
     }
@@ -586,7 +587,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TD_CLICK:
         case TH_CLIC2:
         case TH_SELCT:
-        case TH_SWDSP:
             at_press_mouse = false;
         default:
             break;
@@ -618,40 +618,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
         case TH_WORD: process_tap_and_hold(SEND_STRING(SS_TAP(X_RIGHT) SS_LCTL(SS_TAP(X_LEFT)) SS_LCTL(SS_LSFT(SS_TAP(X_RIGHT)))), SEND_STRING(SS_TAP(X_HOME) SS_LSFT(SS_TAP(X_END))));
         case TH_MINS: // - | ctrl
             if (hold){
-                if (pressed) add_mods(MOD_MASK_CTRL);
-                else del_mods(MOD_MASK_CTRL);
+                if (pressed) add_mods(MOD_BIT(KC_LCTL));
+                else del_mods(MOD_BIT(KC_LCTL));
             }else{
                 if (pressed) SEND_STRING("-");
             }
             return false;
         case TH_NOT: // != | alt
             if (hold){
-                if (pressed) add_mods(MOD_MASK_ALT);
-                else del_mods(MOD_MASK_ALT);
+                if (pressed) add_mods(MOD_BIT(KC_LALT));
+                else del_mods(MOD_BIT(KC_LALT));
             }else{
                 if (pressed) SEND_STRING("!=");
             }
             return false;
         case TH_PLUS: // + | shift
             if (hold){
-                if (pressed) add_mods(MOD_MASK_SHIFT);
-                else del_mods(MOD_MASK_SHIFT);
+                if (pressed) add_mods(MOD_BIT(KC_LSFT));
+                else del_mods(MOD_BIT(KC_LSFT));
             }else{
                 if (pressed) SEND_STRING("+");
-            }
-            return false;
-        case TH_SWDSP: // switch display
-            if(pressed){
-                SEND_STRING(SS_LSFT(SS_LGUI(SS_TAP(X_RIGHT))));
-
-                if (hold){
-                    // and send to upper most slot
-                    SEND_STRING(SS_DELAY(100) SS_LALT(SS_LGUI(SS_TAP(X_UP))));
-
-                    if(!shifted){
-                        SEND_STRING(SS_DELAY(200) SS_TAP(X_ESC));
-                    }
-                }
             }
             return false;
         case TH_OAPPS: // macro to highlight the last opened app in the taskbar
@@ -780,10 +766,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 }
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // accessibility map for the left hand. a smaller number is more confortable
-    //     11, 5 , 5 , 4 , 4 , 6 ,
-    //     8 , 5 , 3 , 1 , 1 , 3 ,
-    //     4 , 3 , 2 , 0 , 0 , 2 ,
-    //     7 , 4 , 3 , 1 , 1 , 3 ,
+    // 14,  5,  5,  4,  4,  6,
+    //  8,  5,  3,  1,  1,  3,
+    //  6,  3,  2,  0,  0,  2,
+    //  7,  4,  3,  1,  1,  3,
 
     [_QWERTY] = LAYOUT_5x6(
 //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
