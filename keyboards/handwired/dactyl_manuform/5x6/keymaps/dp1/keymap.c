@@ -412,7 +412,7 @@ void td_click_finished(tap_dance_state_t *state, void *user_data) {
     td_state_click = cur_dance(state);
     switch (td_state_click) {
         case TD_SINGLE_HOLD:
-            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(600) SS_TAP(X_P)); // open link in a new private window
+            SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(800) SS_TAP(X_P)); // open link in a new private window
             break;
         case TD_DOUBLE_TAP:
             SEND_STRING(SS_DOWN(X_BTN1)); // hold mouse button 1 until it is pressed again
