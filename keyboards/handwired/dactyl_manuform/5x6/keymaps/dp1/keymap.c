@@ -954,6 +954,8 @@ combo_t key_combos[COMBO_COUNT] = {
 
 // _QWERTY layer combos
 //┌──────────────────────────┬──────────────────────────┐          ┌──────────────────────────┬──────────────────────────┐
+//      Bad: w + e              Bad: e + r                           Bad: u + i                 Bad: i + o
+//├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
     COMBO(comboSD, OS_FUNC),    COMBO(comboDF, OS_SYM),             COMBO(comboJK, OS_SYM),     COMBO(comboKL, OS_FUNC),
 //├──────────────────────────├──────────────────────────┤          ├──────────────────────────├──────────────────────────┤
     COMBO(comboXC, OS_WIN),     COMBO(comboCV, OS_ONE),             COMBO(comboMC, OS_ONE),     COMBO(comboCD, OS_WIN),
