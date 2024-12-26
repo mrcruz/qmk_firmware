@@ -3,6 +3,7 @@ TODO:
     KC_REPEAT
 
 how to improve?
+    make it simple!
     what am I using more?
     taps are less stressful than holds
     move things to one shot mods
@@ -24,6 +25,7 @@ HARDWARE
     https://github.com/v0Ch/vfk-001/
     https://github.com/chenfucn/dactyl-pivot
     https://www.printables.com/model/102789-dactyl-flex-w-threaded-tenting
+    svaldboard https://www.youtube.com/watch?v=SPoOlYWcCvU&t=1s
 
 REFERENCES
     https://colemakmods.github.io/ergonomic-mods/wide.html
@@ -70,10 +72,10 @@ REFERENCES
 #define _NUMBER 5
 #define _NAV 7
 #define _FUNC 8
-#define _WIN 9
-#define _MNAV 10
-#define _ONE 11
-#define _HIGHQWERTY 14
+#define _MNAV 9
+#define _WIN 10
+#define _HIGHQWERTY 11
+#define _ONE 12
 #define _ADJUST 15
 
 enum custom_keycodes {
